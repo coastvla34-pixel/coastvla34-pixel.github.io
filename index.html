@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>COAST: Contrastive Conceptor Activation Steering</title>
+<meta name="description" content="COAST steers frozen Vision-Language-Action models at inference time with a closed-form contrastive conceptor fit from a few success and failure rollouts. Anonymous project page, under double-blind review.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\(',right:'\\)',display:false}],throwOnError:false});"></script>
+<style>
+  :root {
+    --bg: #fbfaf7;
+    --surface: #ffffff;
+    --ink: #1c1b18;
+    --ink-2: #4b4943;
+    --muted: #7a776f;
+    --line: #e6e2d8;
+    --accent: #1f5c4d;
+    --accent-soft: #e4f0eb;
+    --success: #2f7d4a;
+    --failure: #b83a3a;
+    --steer: #2456a6;
+    --max: 980px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    padding-inline: 20px;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: var(--max); margin: 0 auto; }
+  header.hero { padding-block: 64px 24px; text-align: center; }
+  .venue {
+    display: inline-block;
+    font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--accent); background: var(--accent-soft);
+    padding: 6px 12px; border-radius: 999px; margin-bottom: 20px;
+  }
+  h1 {
+    font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
+    font-weight: 600; font-size: clamp(30px, 5vw, 46px); line-height: 1.15;
+    margin: 0 0 8px; letter-spacing: -0.01em;
+  }
+  h1 .acr { color: var(--accent); }
+  .subtitle {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: clamp(19px, 2.6vw, 24px); color: var(--ink-2); font-style: italic;
+    margin: 0 0 22px;
+  }
+  .authors { color: var(--ink-2); font-size: 16px; margin-bottom: 6px; }
+  .authors .anon { font-weight: 600; color: var(--ink); }
+  .note { color: var(--muted); font-size: 14px; }
+  .links { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 26px 0 8px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 18px; border-radius: 10px; font-weight: 600; font-size: 15px;
+    background: var(--ink); color: #fff; border: 1px solid var(--ink);
+  }
+  .btn:hover { text-decoration: none; background: #000; }
+  .btn.secondary { background: var(--surface); color: var(--ink); border-color: var(--line); }
+  .btn.secondary:hover { background: #f3f1ec; }
+  .btn.disabled { opacity: .55; cursor: default; pointer-events: none; }
+  .btn svg { width: 16px; height: 16px; }
+
+  section { padding-block: 30px; }
+  section + section { border-top: 1px solid var(--line); }
+  h2 {
+    font-family: "Source Serif 4", Georgia, serif; font-weight: 600;
+    font-size: 28px; line-height: 1.2; margin: 0 0 16px; letter-spacing: -0.01em;
+  }
+  h3 { font-size: 18px; font-weight: 600; margin: 26px 0 8px; }
+  p { margin: 0 0 14px; }
+  .lead { font-size: 18px; color: var(--ink-2); }
+
+  figure { margin: 22px 0; }
+  figure img { display: block; width: 100%; height: auto; border-radius: 8px; background: #fff; border: 1px solid var(--line); }
+  figcaption { font-size: 14.5px; color: var(--ink-2); line-height: 1.5; margin-top: 10px; }
+  figcaption b { color: var(--ink); }
+
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 22px 0 8px; }
+  .tile { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
+  .tile .num { font-family: "Source Serif 4", Georgia, serif; font-size: 34px; font-weight: 600; line-height: 1; color: var(--accent); }
+  .tile .lab { font-size: 13.5px; color: var(--ink-2); margin-top: 8px; line-height: 1.4; }
+
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 22px; margin: 18px 0; }
+  .card.eq { padding-block: 8px; }
+  .steps { counter-reset: s; padding-left: 0; list-style: none; margin: 14px 0; }
+  .steps li { position: relative; padding-left: 44px; margin-bottom: 14px; }
+  .steps li::before {
+    counter-increment: s; content: counter(s);
+    position: absolute; left: 0; top: 2px; width: 28px; height: 28px; border-radius: 50%;
+    background: var(--accent); color: #fff; font-weight: 700; font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .legend { display: inline-flex; gap: 14px; flex-wrap: wrap; font-size: 14px; color: var(--ink-2); margin-bottom: 8px; }
+  .legend span::before { content: ""; display: inline-block; width: 11px; height: 11px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+  .legend .s::before { background: var(--success); }
+  .legend .f::before { background: var(--failure); }
+  .legend .t::before { background: var(--steer); }
+
+  .tablewrap { overflow-x: auto; margin: 16px 0; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; min-width: 640px; }
+  th, td { padding: 9px 12px; text-align: center; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th { font-weight: 600; background: #f6f4ef; color: var(--ink-2); font-size: 13px; letter-spacing: .02em; }
+  td:first-child, th:first-child, td.l, th.l { text-align: left; }
+  tr:last-child td { border-bottom: none; }
+  td.best { font-weight: 700; color: var(--accent); }
+  td.coast { background: #f0f7f4; }
+  th.coast { background: #dfeee7; color: var(--accent); }
+  td.delta { color: var(--success); font-weight: 600; }
+  td.neg { color: var(--failure); }
+  .tnote { font-size: 13.5px; color: var(--muted); margin-top: -6px; }
+
+  .two { display: grid; grid-template-columns: 1.15fr .85fr; gap: 22px; align-items: start; }
+  @media (max-width: 720px) { .two { grid-template-columns: 1fr; } }
+  .two figure { margin-top: 0; }
+
+  ul.plain { padding-left: 20px; margin: 0 0 14px; }
+  ul.plain li { margin-bottom: 6px; }
+
+  footer { border-top: 1px solid var(--line); padding-block: 28px 48px; color: var(--muted); font-size: 14px; text-align: center; }
+  .katex { font-size: 1.05em; }
+  .katex-display { margin: 10px 0 14px; overflow-x: auto; overflow-y: hidden; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="venue">ICLR 2027 Submission &middot; Under Double-Blind Review</div>
+  <h1><span class="acr">C</span>ontrastive C<span class="acr">o</span>nceptor <span class="acr">A</span>ctivation <span class="acr">St</span>eering (COAST)</h1>
+  <p class="subtitle">Unlocking Vision-Language-Action Models through Hidden States</p>
+  <div class="authors"><span class="anon">Anonymous authors</span> &middot; Paper under double-blind review</div>
+  <div class="note">This project page is anonymized for peer review.</div>
+  <div class="links">
+    <a class="btn" href="paper.pdf">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+      Paper (PDF)
+    </a>
+    <a class="btn secondary" href="#results">Results</a>
+    <a class="btn secondary" href="#method">Method</a>
+    <span class="btn secondary disabled" title="Anonymized code and datasets are provided in the supplementary material during review.">Code &amp; data: released on publication</span>
+  </div>
+</header>
+
+<section id="overview">
+  <figure>
+    <img src="figures/coast_overview.png" alt="Overview of COAST: success and failure rollouts are collected offline from a frozen policy, activations are extracted at one layer, success and failure conceptors are fit in closed form and composed into a contrastive conceptor, which multiplicatively gates the residual stream at inference time.">
+    <figcaption><b>Overview of COAST.</b> COAST steers a frozen robot policy at inference time by multiplicatively gating its residual stream with a contrastive conceptor fit from rollout activations. <i>Offline,</i> success and failure rollouts yield layer-\(\ell\) activations, from which closed-form conceptors \(C^{+}\) and \(C^{-}\) are fit and composed via Boolean subspace algebra into \(C_{\text{steer}} = C^{+} \wedge \neg C^{-}\). <i>At inference,</i> the residual \(h\) at layer \(\ell\) is gated by \(M = (1-\beta)I + \beta\, C_{\text{steer}}\) to produce \(h' = hM^\top\), which flows through the rest of the frozen model. No gradient computation or weight modification is required.</figcaption>
+  </figure>
+
+  <div class="tiles">
+    <div class="tile"><div class="num">+20%</div><div class="lab">absolute mean success-rate gain across simulation benchmarks</div></div>
+    <div class="tile"><div class="num">+40%</div><div class="lab">absolute mean gain on real-robot tasks with \(\pi_{0.5}\)-DROID, no fine-tuning</div></div>
+    <div class="tile"><div class="num">15</div><div class="lab">ordinary rollouts with success labels are all that is needed to fit a conceptor</div></div>
+    <div class="tile"><div class="num">0</div><div class="lab">gradient steps, weight updates, auxiliary models, or test-time search</div></div>
+  </div>
+</section>
+
+<section id="abstract">
+  <h2>Abstract</h2>
+  <p class="lead">Vision-Language-Action (VLA) models leverage powerful perceptual priors from web-scale Vision-Language Model (VLM) pre-training, yet they remain surprisingly brittle in practice, frequently failing at simple robotic tasks. To mitigate this, we propose Contrastive Conceptor Activation Steering (COAST).</p>
+  <p>COAST builds on the notion of a &ldquo;conceptor&rdquo;, a linear operator that soft-projects data into the principal components of a target distribution. COAST uses conceptors to identify success-critical subspaces for a target robotic task from a few examples of success and failure rollouts. At inference time, it steers VLA latents into these identified success subspaces to improve task outcomes. Across three architecturally distinct neural policies (flow-matching VLA, autoregressive VLA, and Diffusion Policy), COAST improves absolute mean simulation and real-robot task success rate by over 20 and 40% respectively. The activation subspace geometry reveals that failure modes share substantial structure across tasks while success representations remain largely task-specific. When tasks share similar failure modes, this structure enables previously fitted conceptors to improve performance on new tasks without refitting. Ultimately, our results suggest that current VLAs retain substantial task-relevant knowledge in their latent representations, and that the action expert&rsquo;s decoding bottleneck could be mitigated by steering its residual stream toward task-relevant subspaces. COAST provides a lightweight, training-free path to unlocking these latent capabilities by steering the model towards its own &ldquo;success&rdquo; distributions.</p>
+</section>
+
+<section id="method">
+  <h2>Method</h2>
+  <p>A VLA&rsquo;s hidden states during task execution contain both task-critical and task-irrelevant features. When comparing successes and failures, the irrelevant features remain largely unchanged and exhibit low variance, while task-relevant, outcome-critical states manifest high variance. Conceptors are well suited to this setting: they capture the highly variable, discriminative directions and suppress shared low-variance noise.</p>
+
+  <h3>Conceptors as variance-adaptive filters</h3>
+  <p>Given mean-centered activations \(\tilde{X} \in \mathbb{R}^{N \times d}\), a conceptor \(C\) is the positive semi-definite operator minimizing a regularized reconstruction objective with aperture \(\alpha\):</p>
+  <div class="card eq">
+  $$\min_C \frac{1}{N}\|\tilde{X} - \tilde{X}C\|_F^2 + \alpha^{-2}\|C\|_F^2
+  \qquad\Longrightarrow\qquad
+  C = R\,(R + \alpha^{-2}I)^{-1},\quad R = \tilde{X}^\top \tilde{X}/N.$$
+  </div>
+  <p>If the covariance \(R\) has eigenvalues \(\lambda_i\), the conceptor has eigenvalues \(\mu_i = \lambda_i / (\lambda_i + \alpha^{-2})\). High-variance directions pass through nearly unchanged (\(\mu_i \approx 1\)); low-variance directions are suppressed toward zero. Crucially, \(C\) is computed directly by matrix multiplication and inversion, with no gradient descent.</p>
+
+  <h3>Contrastive conceptors via Boolean subspace algebra</h3>
+  <p>Separate conceptors \(C_{\text{success}}\) and \(C_{\text{failure}}\) are fit on success and failure samples, then composed using the soft Boolean algebra of conceptors:</p>
+  <div class="card eq">
+  $$\neg C = I - C, \qquad
+  A \wedge B = \left(A^{-1} + B^{-1} - I\right)^{-1}, \qquad
+  C_{\text{steer}} = C_{\text{success}} \wedge \neg\, C_{\text{failure}}.$$
+  </div>
+  <p>The AND-NOT operation retains directions present in the success subspace and absent from the failure subspace. Shared directions, which carry outcome-irrelevant computation, are suppressed. What remains is the thin residual subspace that differentiates the two outcomes.</p>
+
+  <h3>Multiplicative gating at inference</h3>
+  <p>At inference time, each residual activation \(h\) of the action expert at layer \(\ell\) is replaced before continuing through the remaining frozen layers:</p>
+  <div class="card eq">
+  $$M = (1-\beta)\,I + \beta\, C_{\text{steer}}, \qquad h' = h\,M^\top, \qquad \beta \in [0,1].$$
+  </div>
+  <p>Interpolating with the identity makes the gate a soft projection: at \(\beta = 0\) the forward pass is unmodified, at \(\beta = 1\) the full conceptor is applied. Because \(M\) has eigenvalues in \([0,1]\), it can only attenuate directions of the residual stream and never amplifies activations.</p>
+
+  <h3>The full recipe</h3>
+  <ol class="steps">
+    <li><b>Collect rollouts.</b> Run the frozen policy for 15 ordinary evaluation episodes on the target task and label each as success or failure.</li>
+    <li><b>Extract activations.</b> Record the action expert&rsquo;s residual stream at a single layer \(\ell\), mean-pooled over the expert&rsquo;s suffix tokens, giving one vector per denoising or autoregressive step.</li>
+    <li><b>Fit conceptors in closed form.</b> Compute \(C_{\text{success}}\) and \(C_{\text{failure}}\); each fit takes under a second on a CPU.</li>
+    <li><b>Compose.</b> Form \(C_{\text{steer}} = C_{\text{success}} \wedge \neg C_{\text{failure}}\).</li>
+    <li><b>Steer.</b> Gate the residual stream with \(M\) at every inference call. Overhead matches any hook-based additive steering method.</li>
+  </ol>
+  <p>We evaluate three variants. <b>Global</b> steering fits one contrastive conceptor from activations pooled across all denoising steps. <b>Per-step</b> steering fits a separate conceptor for each denoising step, tracking shifts in the discriminative subspace as the action is refined from noise. <b>Positive-only</b> steering uses \(C_{\text{success}}\) alone, requiring only successful rollouts. A geometric hyperparameter heuristic (layer via conceptor quota, aperture range via success-failure overlap) recovers 93% of oracle performance while evaluating under 3&ndash;8% of the full configuration grid.</p>
+</section>
+
+<section id="setup">
+  <h2>Experimental Setup</h2>
+  <figure>
+    <img src="figures/envs_figure.jpg" alt="Six panels: MetaWorld ML45, LIBERO-10, and RoboCasa simulation scenes, and three real-robot tasks: Open Drawer, Close Microwave, and Put Duck on Cabinet.">
+    <figcaption><b>Environments.</b> Three simulation benchmarks of increasing difficulty, MetaWorld ML45, LIBERO-10, and a RoboCasa subset, plus real-robot tasks on the DROID platform (7-DoF Franka Panda, Robotiq 2F-85 gripper).</figcaption>
+  </figure>
+  <div class="two">
+    <div>
+      <h3>Policies</h3>
+      <ul class="plain">
+        <li><b>\(\pi_{0.5}\)</b> (flow-matching VLA): MetaWorld, LIBERO, RoboCasa, real robot</li>
+        <li><b>\(\pi_0\)-FAST</b> (autoregressive VLA): MetaWorld, LIBERO, real robot</li>
+        <li><b>GR00T N1.5</b> (flow-matching VLA): RoboCasa, real robot</li>
+        <li><b>Diffusion Policy</b> (non-VLA diffusion baseline): RoboCasa</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Protocol</h3>
+      <ul class="plain">
+        <li><b>Strict train/test split:</b> 15 fitting rollouts to build conceptors and choose hyperparameters, 30 held-out test rollouts with unseen environment configurations.</li>
+        <li><b>Baselines:</b> Contrastive Activation Addition (CAA), Sparse Autoencoder (SAE) steering, and LoRA supervised fine-tuning (SFT) on 30 on-policy rollouts per task, twice COAST&rsquo;s fitting budget.</li>
+        <li><b>Real robot:</b> the released \(\pi_{0.5}\)-DROID checkpoint, not fine-tuned on any demonstrations of the evaluated tasks, 15 trials per task and condition.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="results">
+  <h2>Main Results</h2>
+  <p>Across every model&ndash;benchmark pair, COAST produces statistically significant improvements over the unsteered policy, and the contrastive strategies (global and per-step) consistently outperform additive (CAA) and feature-based (SAE) steering as well as supervised fine-tuning. Gains are largest where the baseline is weakest.</p>
+
+  <div class="tablewrap">
+  <table>
+    <thead>
+      <tr>
+        <th class="l">Benchmark</th><th class="l">Policy</th>
+        <th>Base</th><th>+SFT</th><th>+SAE</th><th>+CAA</th>
+        <th class="coast">COAST Global</th><th class="coast">COAST Per-step</th><th class="coast">COAST Pos-only</th>
+        <th>&Delta; (best)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>RoboCasa</td><td>\(\pi_{0.5}\)</td><td>0.40</td><td>0.31</td><td>0.49</td><td>0.42</td><td class="coast">0.55</td><td class="coast">0.55</td><td class="coast best">0.56</td><td class="delta">+0.16</td></tr>
+      <tr><td>RoboCasa</td><td>GR00T N1.5</td><td>0.59</td><td>0.50</td><td>0.69</td><td>0.62</td><td class="coast best">0.75</td><td class="coast">0.71</td><td class="coast">0.73</td><td class="delta">+0.16</td></tr>
+      <tr><td>RoboCasa</td><td>Diffusion Policy</td><td>0.32</td><td>&ndash;</td><td>0.42</td><td>0.36</td><td class="coast">0.45</td><td class="coast best">0.46</td><td class="coast">0.39</td><td class="delta">+0.14</td></tr>
+      <tr><td>LIBERO-10</td><td>\(\pi_{0.5}\)</td><td>0.43</td><td>0.40</td><td>0.61</td><td>0.47</td><td class="coast">0.76</td><td class="coast best">0.80</td><td class="coast">0.63</td><td class="delta">+0.37</td></tr>
+      <tr><td>LIBERO-10</td><td>\(\pi_0\)-FAST&nbsp;&dagger;</td><td>0.65</td><td>0.62</td><td>0.76</td><td>0.71</td><td class="coast best">0.84</td><td class="coast best">0.84</td><td class="coast">0.79</td><td class="delta">+0.23</td></tr>
+      <tr><td>MetaWorld ML45</td><td>\(\pi_{0.5}\)</td><td>0.69</td><td>0.53</td><td>0.77</td><td>0.79</td><td class="coast best">0.94</td><td class="coast best">0.94</td><td class="coast">0.81</td><td class="delta">+0.25</td></tr>
+      <tr><td>MetaWorld ML45</td><td>\(\pi_0\)-FAST</td><td>0.71</td><td>0.76</td><td>0.79</td><td>0.71</td><td class="coast best">0.82</td><td class="coast">0.79</td><td class="coast">0.81</td><td class="delta">+0.11</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="tnote">Mean success rate over tasks, each computed on 30 held-out test rollouts per task and condition. Bold marks the best method per row. &Delta; is the gain of the best COAST variant over the unsteered policy; all contrastive COAST gains are significant under a paired \(t\)-test across tasks (\(p<0.05\)). &dagger;&nbsp;One LIBERO task has zero failures under the \(\pi_0\)-FAST checkpoint, so that column&rsquo;s mean and &Delta; are over the 9 contrastive-eligible tasks. Per-task results, \(p\)-values, and multiple-comparison corrections are in the paper.</p>
+
+  <h3>Three patterns hold across all benchmarks and architectures</h3>
+  <ul class="plain">
+    <li><b>Contrastive beats positive-only.</b> Subtracting the failure subspace contributes meaningfully beyond projecting toward success.</li>
+    <li><b>Per-step helps on long-horizon tasks.</b> Per-step steering matches or exceeds global steering on LIBERO and RoboCasa but offers little extra on short-horizon MetaWorld, suggesting the discriminative subspace shifts during denoising mainly when multi-step reasoning is required.</li>
+    <li><b>Gains scale inversely with baseline success.</b> Tasks where the unsteered policy struggles most show the largest absolute improvements, e.g. LIBERO <i>Mugs+Plates</i> 0.07&rarr;0.60 and MetaWorld <i>pick-place-wall</i> 0.20&rarr;1.00 for \(\pi_{0.5}\).</li>
+  </ul>
+  <p>SFT underperforms the base policy in five settings: fine-tuning on a strictly limited budget of 30 rollouts often overfits and degrades pre-trained robustness, and scaling SFT to 200 trajectories and 1,000 steps does not close the gap. CAA applies a strictly additive shift along a single direction, and SAE steering collapses selected features back into a single additive direction; neither performs the subspace-aware scaling that conceptors provide.</p>
+</section>
+
+<section id="real">
+  <h2>Real-Robot Results</h2>
+  <div class="two">
+    <div>
+      <p>We test on the DROID platform with the released \(\pi_{0.5}\)-DROID policy, which was not fine-tuned on any demonstrations of these tasks. The tasks have very different dynamics: opening, closing, and pick-and-place. Across the three main tasks, \(\pi_{0.5}\)+COAST achieves the highest success rate with a 40% average absolute improvement, and the largest gain on the challenging <i>Open Drawer</i> task. On <i>Close Microwave</i>, the success conceptor was fit from a single successful base-policy episode.</p>
+      <div class="tablewrap">
+      <table>
+        <thead><tr><th class="l">Task</th><th>Fitting S/F</th><th>\(\pi_{0.5}\)</th><th class="coast">\(\pi_{0.5}\) + COAST</th><th>Gain</th></tr></thead>
+        <tbody>
+          <tr><td>Open Drawer</td><td>5/10</td><td>0.33 (5/15)</td><td class="coast best">0.86 (13/15)</td><td class="delta">+0.53</td></tr>
+          <tr><td>Close Microwave</td><td>1/14</td><td>0.07 (1/15)</td><td class="coast best">0.46 (7/15)</td><td class="delta">+0.39</td></tr>
+          <tr><td>Put Duck in Cabinet</td><td>2/13</td><td>0.13 (2/15)</td><td class="coast best">0.40 (6/15)</td><td class="delta">+0.27</td></tr>
+          <tr><td>Place Banana on Plate</td><td>5/10</td><td>0.33 (5/15)</td><td class="coast best">0.67 (10/15)</td><td class="delta">+0.34</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tnote">15 trials per task and condition. &ldquo;Fitting S/F&rdquo; is the success/failure split of the 15 base-policy rollouts used to fit the conceptor. Wilson 95% confidence intervals are reported in the paper; with 15 trials they are wide, and base and COAST intervals are disjoint only for <i>Open Drawer</i>. \(\pi_0\)-FAST and GR00T N1.5 reach at most 0.26 on any of the three main tasks.</p>
+    </div>
+    <figure>
+      <img src="figures/success_rate_comparison.png" alt="Horizontal bar chart of real-robot success rates for pi0.5 with COAST, pi0.5, pi0-FAST, and GR00T on Open Drawer, Close Microwave, and Put Duck on Cabinet.">
+      <figcaption><b>Real-robot success rates</b> for \(\pi_{0.5}\)+COAST, \(\pi_{0.5}\), \(\pi_0\)-FAST, and GR00T N1.5 on the three main tasks.</figcaption>
+    </figure>
+  </div>
+  <figure>
+    <img src="figures/real_robot_rollout.jpg" alt="Three rows of seven frames each showing successful COAST rollouts for Open Drawer, Close Microwave, and Put Duck in Cabinet.">
+    <figcaption><b>Successful real-world rollouts of \(\pi_{0.5}\)+COAST</b> on <i>Open Drawer</i>, <i>Close Microwave</i>, and <i>Put Duck in Cabinet</i>.</figcaption>
+  </figure>
+</section>
+
+<section id="mechanism">
+  <h2>Why Does a Closed-Form Gate Work?</h2>
+  <p>We identify three geometric facts about the action expert&rsquo;s hidden states that explain the double-digit gains.</p>
+
+  <div class="two">
+    <div>
+      <h3>1. Outcome-relevant computation is low-rank, but not rank-one</h3>
+      <p>Although the \(\pi_{0.5}\) residual stream is 1024-dimensional, the eigenvalue spectra of both success and failure conceptors decay sharply across all steered MetaWorld tasks. The Boolean contrastive operation cancels the dimensions shared by both outcomes, reducing the effective steering subspace to roughly one percent of the hidden dimension. Yet this subspace is strictly multi-dimensional: additive steering along a single mean-difference vector (CAA) recovers only partial gains.</p>
+      <h3>2. Subspace overlap predicts steering efficacy</h3>
+      <p>Per-task gain correlates strongly with the success&ndash;failure overlap (Spearman \(\rho = 0.59\), \(p = 0.002\)),</p>
+      $$\mathrm{sim}(C^{+}, C^{-}) = \frac{\mathrm{tr}(C^{+}C^{-})}{\sqrt{\mathrm{tr}((C^{+})^2)\,\mathrm{tr}((C^{-})^2)}}.$$
+      <p>When the subspaces overlap heavily, the thin residual directions distinguishing them are exactly what AND-NOT isolates. Overlap needs only one matrix product and no rollouts, so it doubles as a cheap diagnostic of where steering will help most.</p>
+    </div>
+    <figure>
+      <img src="figures/master_figure.png" alt="Panel A: eigenvalue spectra of success and failure conceptors decaying rapidly. Panel B: scatter of per-task steering gain against success-failure overlap with a positive trend.">
+      <figcaption><b>The contrastive subspace is low-rank and predictive.</b> <b>(A)</b> Eigenvalue spectra of success (solid) and failure (dashed) conceptors on MetaWorld ML45. <b>(B)</b> Per-task steering gain against overlap; Spearman \(\rho = 0.59\), \(p = 0.002\).</figcaption>
+    </figure>
+  </div>
+
+  <h3>3. Steering reshapes the activation geometry toward success</h3>
+  <figure>
+    <img src="figures/combined_pca_temporal.png" alt="Panel A: activations projected onto the top two eigenvectors of the steering conceptor with baseline success and failure ellipses and steered points. Panel B: projection onto the first eigenvector over normalized trajectory time.">
+    <figcaption><b>Conceptor steering pulls activations toward the success region.</b> <b>(A)</b> Per-step activations projected onto the top two eigenvectors of \(C_{\text{steer}}\), the subspace maximally separating baseline success from failure. Solid ellipses: baseline \(2\sigma\) regions; dashed: steered; large markers: centroids. <b>(B)</b> Projection onto \(v_1(C_{\text{steer}})\) over normalized trajectory time (means \(\pm 1\sigma\)).</figcaption>
+  </figure>
+  <p>The key observation is that steered centroids shift toward the baseline-success centroid and away from the baseline-failure centroid. Over trajectory time, steered successes consistently track the baseline-success mean, while steered failures either sustain a partial shift or revert to the baseline-failure trajectory. The physical outcome closely tracks which distribution the activations align with, confirming that these regions are linked to task execution rather than merely descriptive.</p>
+</section>
+
+<section id="transfer">
+  <h2>Tasks Share Failure Geometry, Enabling Cross-Task Steering</h2>
+  <p>Success activations cluster tightly and uniformly across tasks, while failure activations spread into distinct, task-specific regions. Because the contrastive conceptor acts subtractively along failure directions, a conceptor fitted on one <i>source</i> task should also help a different <i>target</i> task whenever their failure subspaces overlap.</p>
+  <figure>
+    <img src="figures/sim_vs_sr_gain.png" alt="Left: joint PCA of LIBERO activations showing task-specific failure regions and uniform success clusters. Right: transfer gain against failure-subspace containment shows a positive correlation, while success containment shows none.">
+    <figcaption><b>Tasks share failure geometry but not success geometry.</b> <i>Left:</i> Joint PCA of layer-11 activations on \(\pi_{0.5}\) LIBERO with \(2\sigma\) ellipses per task; failure activations (top) spread into task-specific regions, success activations (bottom) cluster uniformly. <i>Right:</i> Each dot is one source&rarr;target pair on LIBERO or RoboCasa. Failure-subspace containment \(\mathrm{tr}(C^f_{\mathrm{src}} C^f_{\mathrm{tgt}})/\mathrm{tr}((C^f_{\mathrm{src}})^2)\) correlates with transfer gain (top; \(r = 0.30\) and \(0.49\), \(p < 0.005\)); success containment does not (bottom; \(|r| < 0.13\), \(p > 0.4\)).</figcaption>
+  </figure>
+  <p>Transferred conceptors retain most of the gain of the self-fit configuration, and in several cases match or exceed it. On LIBERO, a conceptor fit on <i>Mug+Micro</i> lifts <i>Cheese+Butter</i> by +0.80, and on RoboCasa a <i>Coffee Setup</i> conceptor lifts <i>Open Drawer</i> by +0.60, both without any refitting on the target task. Shared failure structure, not shared success structure, drives these gains.</p>
+</section>
+
+<section id="limitations">
+  <h2>Limitations and Broader Impact</h2>
+  <p><b>Limitations.</b> Contrastive conceptors require both success and failure rollouts; uniformly successful tasks fall back to positive-only steering, which is safe but can be less effective. Tasks with nearly disjoint success and failure subspaces show smaller gains, as the overlap&ndash;efficacy relationship predicts. Whether the geometric hyperparameter selection generalizes beyond the architectures tested here remains open. The real-world evidence covers four tasks with 15 trials per condition in a single physical setup and should be read as evidence that simulation gains transfer to hardware, not as an estimate of robustness across varied scenes.</p>
+  <p><b>Broader impact.</b> COAST lowers the cost of adapting frozen robot policies, replacing fine-tuning with a handful of rollouts and a closed-form computation. Because steering acts on internal activations, a steered policy is hard to distinguish from an unmodified one from action traces alone, and the same operator could be constructed to steer toward failure-aligned behavior. Two properties bound the intervention: the steering matrix has eigenvalues in \([0,1]\) and spectral norm at most one, so it can only attenuate and never amplify activations, and it is fully specified by a stored matrix that can be logged. We recommend that deployments log applied conceptors as part of the policy specification and pair activation steering with output-level monitoring and standard physical safeguards.</p>
+</section>
+
+<footer>
+  Anonymous project page for an ICLR 2027 submission under double-blind review.<br>
+  Anonymized code, pre-collected activation datasets, and real-robot evaluation rollouts are provided in the supplementary material.
+</footer>
+
+</div>
+</body>
+</html>
