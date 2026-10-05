@@ -90,11 +90,6 @@
   figcaption { font-size: 14.5px; color: var(--ink-2); line-height: 1.5; margin-top: 10px; }
   figcaption b { color: var(--ink); }
 
-  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 22px 0 8px; }
-  .tile { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
-  .tile .num { font-family: "Source Serif 4", Georgia, serif; font-size: 34px; font-weight: 600; line-height: 1; color: var(--accent); }
-  .tile .lab { font-size: 13.5px; color: var(--ink-2); margin-top: 8px; line-height: 1.4; }
-
   .card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 22px; margin: 18px 0; }
   .card.eq { padding-block: 8px; }
   .steps { counter-reset: s; padding-left: 0; list-style: none; margin: 14px 0; }
@@ -131,6 +126,57 @@
   ul.plain { padding-left: 20px; margin: 0 0 14px; }
   ul.plain li { margin-bottom: 6px; }
 
+  /* Real-robot rollouts: task selector + before/after steering comparison */
+  .task-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 14px; }
+  .task-tab {
+    appearance: none; cursor: pointer; font: inherit; font-weight: 600; font-size: 15px;
+    display: inline-flex; flex-direction: column; align-items: flex-start; gap: 2px;
+    padding: 10px 16px; border-radius: 12px; background: var(--surface); color: var(--ink);
+    border: 1px solid var(--line); transition: background .15s, border-color .15s;
+  }
+  .task-tab:hover { background: #f3f1ec; }
+  .task-tab .tt-sr { font-size: 12.5px; font-weight: 500; color: var(--muted); }
+  .task-tab .tt-sr b { color: var(--accent); font-weight: 700; }
+  .task-tab.is-active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+  .task-tab.is-active .tt-sr { color: var(--ink-2); }
+  .task-panel { display: none; }
+  .task-panel.is-active { display: block; }
+  .task-meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 18px; margin-bottom: 12px; font-size: 15px; color: var(--ink-2); }
+  .task-meta .prompt { font-family: "Source Serif 4", Georgia, serif; font-style: italic; font-size: 17px; color: var(--ink); }
+  .task-meta .hp { font-size: 14px; color: var(--muted); }
+  .compare { display: grid; gap: 10px; }
+  .clip { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px 12px; }
+  .clip.steer { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .clip-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-bottom: 10px; }
+  .clip-head .who { font-weight: 700; font-size: 16.5px; }
+  .clip.steer .clip-head .who { color: var(--accent); }
+  .clip-head .what { font-size: 14px; color: var(--muted); }
+  .clip-head .outcome { margin-left: auto; font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #fff; padding: 3px 10px; border-radius: 999px; }
+  .clip-head .outcome.ok { background: var(--success); }
+  .clip-head .outcome.no { background: var(--failure); }
+  .clip video { display: block; width: 100%; height: auto; border-radius: 8px; background: #000; }
+  .clip .sub { font-size: 13.5px; color: var(--muted); margin-top: 8px; }
+  .arrow { display: flex; align-items: center; justify-content: center; gap: 10px; color: var(--steer); font-weight: 600; font-size: 14.5px; padding: 2px 0; }
+  .arrow svg { width: 22px; height: 22px; }
+  .arrow .k { font-weight: 500; color: var(--ink-2); }
+  .trials-h { display: flex; align-items: baseline; gap: 10px; margin: 22px 0 10px; font-size: 17px; font-weight: 600; }
+  .trials-h .cnt { font-size: 13.5px; font-weight: 500; color: var(--muted); }
+  .trials { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px 14px; }
+  @media (max-width: 720px) { .trials { grid-template-columns: 1fr; } }
+  .trial video { display: block; width: 100%; height: auto; border-radius: 8px; background: #000; border: 1px solid var(--line); }
+  .trial .tn { display: block; font-size: 12.5px; color: var(--muted); margin-top: 4px; }
+  details.appendix { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 0 18px; margin: 18px 0; }
+  details.appendix summary { cursor: pointer; font-weight: 600; padding: 14px 0; list-style: none; display: flex; align-items: center; gap: 10px; }
+  details.appendix summary::-webkit-details-marker { display: none; }
+  details.appendix summary::before { content: "+"; display: inline-flex; width: 22px; height: 22px; align-items: center; justify-content: center; border-radius: 6px; background: var(--accent-soft); color: var(--accent); font-weight: 700; }
+  details.appendix[open] summary::before { content: "\2013"; }
+  details.appendix summary .tag { font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: .04em; text-transform: uppercase; }
+  details.appendix .inner { padding-bottom: 16px; }
+  details.appendix .tablewrap { border: none; border-radius: 0; margin: 10px 0 14px; }
+  table.kv th, table.kv td { white-space: normal; text-align: left; }
+  table.kv td:first-child { font-weight: 600; width: 190px; color: var(--ink-2); }
+  table.kv { min-width: 0; }
+
   footer { border-top: 1px solid var(--line); padding-block: 28px 48px; color: var(--muted); font-size: 14px; text-align: center; }
   .katex { font-size: 1.05em; }
   .katex-display { margin: 10px 0 14px; overflow-x: auto; overflow-y: hidden; }
@@ -146,15 +192,158 @@
   <div class="authors"><span class="anon">Anonymous authors</span> &middot; Paper under double-blind review</div>
   <div class="note">This project page is anonymized for peer review.</div>
   <div class="links">
-    <a class="btn" href="paper.pdf">
+    <a class="btn" href="https://arxiv.org/abs/2605.17144" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
-      Paper (PDF)
+      Paper (arXiv)
     </a>
+    <a class="btn secondary" href="paper.pdf" title="Full submission PDF with the extended appendix (real-robot protocol, confidence intervals, and additional ablations).">Full PDF (extended appendix)</a>
+    <a class="btn secondary" href="#rollouts">Robot videos</a>
     <a class="btn secondary" href="#results">Results</a>
     <a class="btn secondary" href="#method">Method</a>
-    <span class="btn secondary disabled" title="Anonymized code and datasets are provided in the supplementary material during review.">Code &amp; data: released on publication</span>
+    <a class="btn secondary" href="https://anonymous-hf.com/a/7no77r4xdeyr/" target="_blank" rel="noopener" title="Anonymized dataset: real-robot π0.5-DROID activations (pi05_droid_activation)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+      <span>Data: \(\pi_{0.5}\)-DROID activations</span>
+    </a>
+    <a class="btn secondary" href="https://anonymous-hf.com/a/cg8oedr87jzh/" target="_blank" rel="noopener" title="Anonymized dataset: VLA simulation activations (vla_simulation_activation)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+      <span>Data: VLA simulation activations</span>
+    </a>
+    <span class="btn secondary disabled" title="Anonymized code is provided in the supplementary material during review.">Code: released on publication</span>
   </div>
 </header>
+
+<section id="rollouts">
+  <h2>Real-Robot Rollouts: \(\pi_{0.5}\) Before and After Steering</h2>
+  <p class="lead">Pick a task to compare the frozen \(\pi_{0.5}\)-DROID policy&rsquo;s own rollout with the same policy steered by COAST. The conceptor for each task is fit from the 15 base-policy trials; nothing else changes between the two clips. Below each comparison are all successful steered trials from the 15-trial evaluation. Clips show the two external ZED cameras and the wrist camera side by side and are played at 2&times; speed.</p>
+  <div class="task-tabs" role="tablist" aria-label="Real-robot task">
+    <button class="task-tab is-active" role="tab" aria-selected="true" aria-controls="task-open_drawer" data-task="open_drawer">Open Drawer <span class="tt-sr">5/15 &rarr; <b>13/15</b></span></button>
+    <button class="task-tab" role="tab" aria-selected="false" aria-controls="task-close_microwave" data-task="close_microwave">Close Microwave <span class="tt-sr">1/15 &rarr; <b>7/15</b></span></button>
+    <button class="task-tab" role="tab" aria-selected="false" aria-controls="task-put_duck" data-task="put_duck">Put Duck in Cabinet <span class="tt-sr">2/15 &rarr; <b>6/15</b></span></button>
+  </div>
+  <div class="task-panels">
+    <div class="task-panel is-active" id="task-open_drawer" role="tabpanel">
+      <div class="task-meta"><span class="prompt">&ldquo;open upper left drawer&rdquo;</span><span class="hp">Layer 5 &middot; \(\alpha=5.0\) &middot; \(\beta=0.2\)</span><span>15 trials per condition: \(\pi_{0.5}\) 5/15 &rarr; \(\pi_{0.5}\)+COAST <b>13/15</b></span></div>
+      <div class="compare">
+        <div class="clip base">
+          <div class="clip-head"><span class="who">\(\pi_{0.5}\)-DROID</span><span class="what">frozen policy, no steering</span><span class="outcome no">Task not completed</span></div>
+          <video muted loop playsinline controls preload="metadata" poster="videos/posters/open_drawer_pi05.jpg"><source src="videos/open_drawer_pi05.mp4" type="video/mp4"></video>
+          <div class="sub">Base policy hovers over the drawer and times out at 700 steps without opening it</div>
+        </div>
+        <div class="arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16"/><path d="M6 14l6 6 6-6"/></svg>
+          <span>COAST steering</span><span class="k">&mdash; same policy, same scene, conceptor gate applied at layer 5</span>
+        </div>
+        <div class="clip steer">
+          <div class="clip-head"><span class="who">\(\pi_{0.5}\)-DROID + COAST</span><span class="what">steered at inference time, no fine-tuning</span><span class="outcome ok">Task completed</span></div>
+          <video muted loop playsinline controls preload="metadata" poster="videos/posters/open_drawer_coast.jpg"><source src="videos/open_drawer_coast.mp4" type="video/mp4"></video>
+          <div class="sub">Steered policy grasps the handle and pulls the drawer open</div>
+        </div>
+      </div>
+      <h3 class="trials-h">All successful \(\pi_{0.5}\)+COAST trials <span class="cnt">13 videos &middot; 13 of 15 trials succeeded</span></h3>
+      <div class="trials">
+        <div class="trial"><video controls muted loop playsinline preload="none" poster="videos/posters/open_drawer_01.jpg"><source src="videos/trials/open_drawer_01.mp4" type="video/mp4"></video><span class="tn">Trial 1</span></div>
+        <div class="trial"><video controls muted loop playsinline preload="none" poster="videos/posters/open_drawer_02.jpg"><source src="videos/trials/open_drawer_02.mp4" type="video/mp4"></video><span class="tn">Trial 2</span></div>
+        <div class="trial"><video controls muted loop playsinline preload="none" poster="videos/posters/open_drawer_03.jpg"><source src="videos/trials/open_drawer_03.mp4" type="video/mp4"></video><span class="tn">Trial 3</span></div>
+        <div class="trial"><video controls muted loop playsinline preload="none" poster="videos/posters/open_drawer_04.jpg"><source src="videos/trials/open_drawer_04.mp4" type="video/mp4"></video><span class="tn">Trial 4</span></div>
+        <div class="trial"><video controls muted loop playsinline preload="none" poster="videos/posters/open_drawer_05.jpg"><source src="videos/trials/open_drawer_05.mp4" type="video/mp4"></video><span class="tn">Trial 5</span></div>
+        <div class="trial"><video controls muted loop playsinline preload="none" poster="videos/posters/open_drawer_06.jpg"><source src="videos/trials/open_drawer_06.mp4" type="video/mp4"></video><span class="tn">Trial 6</span></div>
+        <div class="trial"><video controls muted loop playsinline preload="none" poster="videos/posters/open_drawer_07.jpg"><source src="videos/trials/open_drawer_07.mp4" type="video/mp4"></video><span class="tn">Trial 7</span></div>
+        <div class="trial"><video controls muted loop playsinline preload="none" poster="videos/posters/open_drawer_08.jpg"><source src="videos/trials/open_drawer_08.mp4" type="video/mp4"></video><span class="tn">Trial 8</span></div>
+        <div class="trial"><video controls muted loop playsinline preload="none" poster="videos/posters/open_drawer_09.jpg"><source src="videos/trials/open_drawer_09.mp4" type="video/mp4"></video><span class="tn">Trial 9</span></div>
+        <div class="trial"><video controls muted loop playsinline preload="none" poster="videos/posters/open_drawer_10.jpg"><source src="videos/trials/open_drawer_10.mp4" type="video/mp4"></video><span class="tn">Trial 10</span></div>
+        <div class="trial"><video controls muted loop playsinline preload="none" poster="videos/posters/open_drawer_11.jpg"><source src="videos/trials/open_drawer_11.mp4" type="video/mp4"></video><span class="tn">Trial 11</span></div>
+        <div class="trial"><video controls muted loop playsinline preload="none" poster="videos/posters/open_drawer_12.jpg"><source src="videos/trials/open_drawer_12.mp4" type="video/mp4"></video><span class="tn">Trial 12</span></div>
+        <div class="trial"><video controls muted loop playsinline preload="none" poster="videos/posters/open_drawer_13.jpg"><source src="videos/trials/open_drawer_13.mp4" type="video/mp4"></video><span class="tn">Trial 13</span></div>
+      </div>
+    </div>
+    <div class="task-panel" id="task-close_microwave" role="tabpanel">
+      <div class="task-meta"><span class="prompt">&ldquo;close the microwave door tightly&rdquo;</span><span class="hp">Layer 5 &middot; \(\alpha=3.5\) &middot; \(\beta=0.1\)</span><span>15 trials per condition: \(\pi_{0.5}\) 1/15 &rarr; \(\pi_{0.5}\)+COAST <b>7/15</b></span></div>
+      <div class="compare">
+        <div class="clip base">
+          <div class="clip-head"><span class="who">\(\pi_{0.5}\)-DROID</span><span class="what">frozen policy, no steering</span><span class="outcome no">Task not completed</span></div>
+          <video muted loop playsinline controls preload="none" poster="videos/posters/close_microwave_pi05.jpg"><source src="videos/close_microwave_pi05.mp4" type="video/mp4"></video>
+          <div class="sub">Base policy pushes at the door edge and times out at 500 steps with the door still open</div>
+        </div>
+        <div class="arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16"/><path d="M6 14l6 6 6-6"/></svg>
+          <span>COAST steering</span><span class="k">&mdash; same policy, same scene, conceptor gate applied at layer 5</span>
+        </div>
+        <div class="clip steer">
+          <div class="clip-head"><span class="who">\(\pi_{0.5}\)-DROID + COAST</span><span class="what">steered at inference time, no fine-tuning</span><span class="outcome ok">Task completed</span></div>
+          <video muted loop playsinline controls preload="none" poster="videos/posters/close_microwave_coast.jpg"><source src="videos/close_microwave_coast.mp4" type="video/mp4"></video>
+          <div class="sub">Steered policy closes the door &middot; success conceptor fit from a single successful base episode</div>
+        </div>
+      </div>
+      <h3 class="trials-h">All successful \(\pi_{0.5}\)+COAST trials <span class="cnt">7 videos &middot; 7 of 15 trials succeeded</span></h3>
+      <div class="trials">
+        <div class="trial"><video controls muted loop playsinline preload="none" poster="videos/posters/close_microwave_01.jpg"><source src="videos/trials/close_microwave_01.mp4" type="video/mp4"></video><span class="tn">Trial 1</span></div>
+        <div class="trial"><video controls muted loop playsinline preload="none" poster="videos/posters/close_microwave_02.jpg"><source src="videos/trials/close_microwave_02.mp4" type="video/mp4"></video><span class="tn">Trial 2</span></div>
+        <div class="trial"><video controls muted loop playsinline preload="none" poster="videos/posters/close_microwave_03.jpg"><source src="videos/trials/close_microwave_03.mp4" type="video/mp4"></video><span class="tn">Trial 3</span></div>
+        <div class="trial"><video controls muted loop playsinline preload="none" poster="videos/posters/close_microwave_04.jpg"><source src="videos/trials/close_microwave_04.mp4" type="video/mp4"></video><span class="tn">Trial 4</span></div>
+        <div class="trial"><video controls muted loop playsinline preload="none" poster="videos/posters/close_microwave_05.jpg"><source src="videos/trials/close_microwave_05.mp4" type="video/mp4"></video><span class="tn">Trial 5</span></div>
+        <div class="trial"><video controls muted loop playsinline preload="none" poster="videos/posters/close_microwave_06.jpg"><source src="videos/trials/close_microwave_06.mp4" type="video/mp4"></video><span class="tn">Trial 6</span></div>
+        <div class="trial"><video controls muted loop playsinline preload="none" poster="videos/posters/close_microwave_07.jpg"><source src="videos/trials/close_microwave_07.mp4" type="video/mp4"></video><span class="tn">Trial 7</span></div>
+      </div>
+    </div>
+    <div class="task-panel" id="task-put_duck" role="tabpanel">
+      <div class="task-meta"><span class="prompt">&ldquo;put duck on cabinet&rdquo;</span><span class="hp">Layer 5 &middot; \(\alpha=0.2\) &middot; \(\beta=0.1\)</span><span>15 trials per condition: \(\pi_{0.5}\) 2/15 &rarr; \(\pi_{0.5}\)+COAST <b>6/15</b></span></div>
+      <div class="compare">
+        <div class="clip base">
+          <div class="clip-head"><span class="who">\(\pi_{0.5}\)-DROID</span><span class="what">frozen policy, no steering</span><span class="outcome no">Task not completed</span></div>
+          <video muted loop playsinline controls preload="none" poster="videos/posters/put_duck_pi05.jpg"><source src="videos/put_duck_pi05.mp4" type="video/mp4"></video>
+          <div class="sub">Base policy lifts the duck but drops it before reaching the cabinet</div>
+        </div>
+        <div class="arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16"/><path d="M6 14l6 6 6-6"/></svg>
+          <span>COAST steering</span><span class="k">&mdash; same policy, same scene, conceptor gate applied at layer 5</span>
+        </div>
+        <div class="clip steer">
+          <div class="clip-head"><span class="who">\(\pi_{0.5}\)-DROID + COAST</span><span class="what">steered at inference time, no fine-tuning</span><span class="outcome ok">Task completed</span></div>
+          <video muted loop playsinline controls preload="none" poster="videos/posters/put_duck_coast.jpg"><source src="videos/put_duck_coast.mp4" type="video/mp4"></video>
+          <div class="sub">Steered policy picks up the duck and places it in the cabinet</div>
+        </div>
+      </div>
+      <h3 class="trials-h">All successful \(\pi_{0.5}\)+COAST trials <span class="cnt">5 videos &middot; 6 of 15 trials succeeded (video recording failed for one success)</span></h3>
+      <div class="trials">
+        <div class="trial"><video controls muted loop playsinline preload="none" poster="videos/posters/put_duck_01.jpg"><source src="videos/trials/put_duck_01.mp4" type="video/mp4"></video><span class="tn">Trial 1</span></div>
+        <div class="trial"><video controls muted loop playsinline preload="none" poster="videos/posters/put_duck_02.jpg"><source src="videos/trials/put_duck_02.mp4" type="video/mp4"></video><span class="tn">Trial 2</span></div>
+        <div class="trial"><video controls muted loop playsinline preload="none" poster="videos/posters/put_duck_03.jpg"><source src="videos/trials/put_duck_03.mp4" type="video/mp4"></video><span class="tn">Trial 3</span></div>
+        <div class="trial"><video controls muted loop playsinline preload="none" poster="videos/posters/put_duck_04.jpg"><source src="videos/trials/put_duck_04.mp4" type="video/mp4"></video><span class="tn">Trial 4</span></div>
+        <div class="trial"><video controls muted loop playsinline preload="none" poster="videos/posters/put_duck_05.jpg"><source src="videos/trials/put_duck_05.mp4" type="video/mp4"></video><span class="tn">Trial 5</span></div>
+      </div>
+    </div>
+  </div>
+  <p class="tnote" style="margin-top:14px;">Clips are unedited rollouts from the 15-trial evaluation, played at 2&times; speed. Full protocol, per-task hyperparameters, and confidence intervals are in the <a href="#real">Real-Robot Results</a> section.</p>
+</section>
+
+<script>
+(function () {
+  var tabs = document.querySelectorAll('.task-tab');
+  var panels = document.querySelectorAll('.task-panel');
+  function show(key) {
+    tabs.forEach(function (t) {
+      var on = t.dataset.task === key;
+      t.classList.toggle('is-active', on);
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    panels.forEach(function (p) {
+      var on = p.id === 'task-' + key;
+      p.classList.toggle('is-active', on);
+      p.querySelectorAll('.compare video').forEach(function (v) {
+        if (on) {
+          if (v.preload === 'none') { v.preload = 'metadata'; v.load(); }
+          v.play().catch(function () {});
+        } else {
+          v.pause();
+        }
+      });
+      if (!on) p.querySelectorAll('.trials video').forEach(function (v) { v.pause(); });
+    });
+  }
+  tabs.forEach(function (t) { t.addEventListener('click', function () { show(t.dataset.task); }); });
+  show('open_drawer');
+})();
+</script>
 
 <section id="overview">
   <figure>
@@ -162,12 +351,6 @@
     <figcaption><b>Overview of COAST.</b> COAST steers a frozen robot policy at inference time by multiplicatively gating its residual stream with a contrastive conceptor fit from rollout activations. <i>Offline,</i> success and failure rollouts yield layer-\(\ell\) activations, from which closed-form conceptors \(C^{+}\) and \(C^{-}\) are fit and composed via Boolean subspace algebra into \(C_{\text{steer}} = C^{+} \wedge \neg C^{-}\). <i>At inference,</i> the residual \(h\) at layer \(\ell\) is gated by \(M = (1-\beta)I + \beta\, C_{\text{steer}}\) to produce \(h' = hM^\top\), which flows through the rest of the frozen model. No gradient computation or weight modification is required.</figcaption>
   </figure>
 
-  <div class="tiles">
-    <div class="tile"><div class="num">+20%</div><div class="lab">absolute mean success-rate gain across simulation benchmarks</div></div>
-    <div class="tile"><div class="num">+40%</div><div class="lab">absolute mean gain on real-robot tasks with \(\pi_{0.5}\)-DROID, no fine-tuning</div></div>
-    <div class="tile"><div class="num">15</div><div class="lab">ordinary rollouts with success labels are all that is needed to fit a conceptor</div></div>
-    <div class="tile"><div class="num">0</div><div class="lab">gradient steps, weight updates, auxiliary models, or test-time search</div></div>
-  </div>
 </section>
 
 <section id="abstract">
@@ -281,31 +464,71 @@
 
 <section id="real">
   <h2>Real-Robot Results</h2>
-  <div class="two">
-    <div>
+  <div>
       <p>We test on the DROID platform with the released \(\pi_{0.5}\)-DROID policy, which was not fine-tuned on any demonstrations of these tasks. The tasks have very different dynamics: opening, closing, and pick-and-place. Across the three main tasks, \(\pi_{0.5}\)+COAST achieves the highest success rate with a 40% average absolute improvement, and the largest gain on the challenging <i>Open Drawer</i> task. On <i>Close Microwave</i>, the success conceptor was fit from a single successful base-policy episode.</p>
       <div class="tablewrap">
       <table>
-        <thead><tr><th class="l">Task</th><th>Fitting S/F</th><th>\(\pi_{0.5}\)</th><th class="coast">\(\pi_{0.5}\) + COAST</th><th>Gain</th></tr></thead>
+        <thead><tr><th class="l">Task</th><th>Fitting S/F</th><th>\(\pi_{0.5}\) [95% CI]</th><th class="coast">\(\pi_{0.5}\) + COAST [95% CI]</th><th>Gain</th></tr></thead>
         <tbody>
-          <tr><td>Open Drawer</td><td>5/10</td><td>0.33 (5/15)</td><td class="coast best">0.86 (13/15)</td><td class="delta">+0.53</td></tr>
-          <tr><td>Close Microwave</td><td>1/14</td><td>0.07 (1/15)</td><td class="coast best">0.46 (7/15)</td><td class="delta">+0.39</td></tr>
-          <tr><td>Put Duck in Cabinet</td><td>2/13</td><td>0.13 (2/15)</td><td class="coast best">0.40 (6/15)</td><td class="delta">+0.27</td></tr>
-          <tr><td>Place Banana on Plate</td><td>5/10</td><td>0.33 (5/15)</td><td class="coast best">0.67 (10/15)</td><td class="delta">+0.34</td></tr>
+          <tr><td>Open Drawer</td><td>5/10</td><td>0.33 (5/15) [0.15, 0.58]</td><td class="coast best">0.86 (13/15) [0.62, 0.96]</td><td class="delta">+0.53</td></tr>
+          <tr><td>Close Microwave</td><td>1/14</td><td>0.07 (1/15) [0.01, 0.30]</td><td class="coast best">0.46 (7/15) [0.25, 0.70]</td><td class="delta">+0.39</td></tr>
+          <tr><td>Put Duck in Cabinet</td><td>2/13</td><td>0.13 (2/15) [0.04, 0.38]</td><td class="coast best">0.40 (6/15) [0.20, 0.64]</td><td class="delta">+0.27</td></tr>
+          <tr><td>Place Banana on Plate</td><td>5/10</td><td>0.33 (5/15) [0.15, 0.58]</td><td class="coast best">0.67 (10/15) [0.41, 0.85]</td><td class="delta">+0.34</td></tr>
         </tbody>
       </table>
       </div>
-      <p class="tnote">15 trials per task and condition. &ldquo;Fitting S/F&rdquo; is the success/failure split of the 15 base-policy rollouts used to fit the conceptor. Wilson 95% confidence intervals are reported in the paper; with 15 trials they are wide, and base and COAST intervals are disjoint only for <i>Open Drawer</i>. \(\pi_0\)-FAST and GR00T N1.5 reach at most 0.26 on any of the three main tasks.</p>
-    </div>
-    <figure>
+      <p class="tnote">15 trials per task and condition; brackets are Wilson 95% confidence intervals. &ldquo;Fitting S/F&rdquo; is the success/failure split of the 15 base-policy rollouts used to fit the conceptor. With 15 trials the intervals are wide, and base and COAST intervals are disjoint only for <i>Open Drawer</i>. The mean absolute gain is +0.40 over the three main tasks and +0.38 over all four. \(\pi_0\)-FAST and GR00T N1.5 reach at most 0.26 on any of the three main tasks.</p>
+    <figure style="max-width:340px;margin:18px auto 6px;">
       <img src="figures/success_rate_comparison.png" alt="Horizontal bar chart of real-robot success rates for pi0.5 with COAST, pi0.5, pi0-FAST, and GR00T on Open Drawer, Close Microwave, and Put Duck on Cabinet.">
       <figcaption><b>Real-robot success rates</b> for \(\pi_{0.5}\)+COAST, \(\pi_{0.5}\), \(\pi_0\)-FAST, and GR00T N1.5 on the three main tasks.</figcaption>
     </figure>
   </div>
   <figure>
     <img src="figures/real_robot_rollout.jpg" alt="Three rows of seven frames each showing successful COAST rollouts for Open Drawer, Close Microwave, and Put Duck in Cabinet.">
-    <figcaption><b>Successful real-world rollouts of \(\pi_{0.5}\)+COAST</b> on <i>Open Drawer</i>, <i>Close Microwave</i>, and <i>Put Duck in Cabinet</i>.</figcaption>
+    <figcaption><b>Successful real-world rollouts of \(\pi_{0.5}\)+COAST</b> on <i>Open Drawer</i>, <i>Close Microwave</i>, and <i>Put Duck in Cabinet</i>. Before/after-steering videos for each task are shown <a href="#rollouts">at the top of the page</a>.</figcaption>
   </figure>
+
+  <details class="appendix" open>
+    <summary>Real-world evaluation: protocol, calibration data, and hyperparameters <span class="tag">Extended appendix</span></summary>
+    <div class="inner">
+      <p>We use the DROID robot setup, which consists of a 7-DoF Franka Emika Panda arm, a Robotiq 2F-85 parallel-jaw gripper, a wrist-mounted ZED Mini RGB-D camera, and two side-mounted ZED 2 stereo cameras. This setup enables the generalist \(\pi_{0.5}\)-DROID checkpoint to be run directly; the policy is the released checkpoint and is not fine-tuned on any demonstrations of the evaluated tasks. Activations are captured from the action expert&rsquo;s residual stream at layers \(\{0, 5, 11, 17\}\) during every inference call.</p>
+
+      <h3 style="margin-top:14px;">Evaluation protocol</h3>
+      <div class="tablewrap">
+      <table class="kv">
+        <tbody>
+          <tr><td>Platform</td><td>DROID: 7-DoF Franka Emika Panda, Robotiq 2F-85 gripper, wrist ZED Mini and external ZED 2</td></tr>
+          <tr><td>Policy</td><td>\(\pi_{0.5}\)-DROID, not fine-tuned on any demonstrations of these tasks</td></tr>
+          <tr><td>Control</td><td>Joint velocity and gripper position at 15 Hz</td></tr>
+          <tr><td>Action chunk</td><td>10 actions &times; 8 dims (7 joint velocities + 1 gripper)</td></tr>
+          <tr><td>Open-loop horizon</td><td>8 of 10 actions executed per replan (about 0.53 s)</td></tr>
+          <tr><td>Cameras to policy</td><td>1 external ZED (left) + wrist, resized with padding to 224 &times; 224</td></tr>
+          <tr><td>Activation capture</td><td>Residual stream at layers \(\{0, 5, 11, 17\}\); tensor of (10 denoising steps, 4 layers, 15 action tokens, \(d=1024\)) per inference call</td></tr>
+          <tr><td>Trials</td><td>15 evaluation trials per task and condition; the 15 base-policy trials are also the fitting rollouts</td></tr>
+          <tr><td>Scene</td><td>Target-object placements kept as consistent as possible across trials and conditions</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <h3>Per-task calibration data and hyperparameters</h3>
+      <p>For each task, the 15 base-policy trials serve both as the baseline measurement and as the fitting rollouts for COAST; no additional data collection is required. The table lists the language prompt, episode horizon, and the selected steering layer, aperture \(\alpha\), and strength \(\beta\) for every task. The success/failure split of the fitting rollouts is the &ldquo;Fitting S/F&rdquo; column above.</p>
+      <div class="tablewrap">
+      <table>
+        <thead><tr><th class="l">Task</th><th>Layer</th><th>\(\alpha\)</th><th>\(\beta\)</th><th class="l">Prompt</th><th>Max timesteps</th></tr></thead>
+        <tbody>
+          <tr><td>Open Drawer</td><td>5</td><td>5.0</td><td>0.2</td><td class="l">&ldquo;open upper left drawer&rdquo;</td><td>700</td></tr>
+          <tr><td>Close Microwave</td><td>5</td><td>3.5</td><td>0.1</td><td class="l">&ldquo;close the microwave door tightly&rdquo;</td><td>500</td></tr>
+          <tr><td>Put Duck in Cabinet</td><td>5</td><td>0.2</td><td>0.1</td><td class="l">&ldquo;put duck on cabinet&rdquo;</td><td>200</td></tr>
+          <tr><td>Place Banana on Plate</td><td>5</td><td>5.0</td><td>0.1</td><td class="l">&ldquo;place yellow banana on black plate&rdquo;</td><td>300</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <h3>Fourth task and scope of the real-world evidence</h3>
+      <p>In addition to the three tasks in the main text, we evaluate a fourth task, <i>Place Banana on Plate</i>, in which the robot must pick up a yellow banana from the middle shelf and place it onto a black plate on the table; this provides an object-placement configuration distinct from the original three tasks. On <i>Close Microwave</i>, the success conceptor is fit from a single successful base-policy episode.</p>
+      <p>This evaluation is deliberately reported with its limitations. It covers four tasks with 15 trials per condition in a single physical setup, and the confidence intervals are correspondingly wide: the base and COAST intervals are disjoint only for <i>Open Drawer</i>. The results should therefore be read as evidence that the simulation gains transfer to hardware on the evaluated tasks, not as an estimate of robustness across varied real-world scenes. All 15 COAST evaluation rollouts per task and the base-policy activations used for fitting are provided through an anonymized link in the supplementary material.</p>
+    </div>
+  </details>
 </section>
 
 <section id="mechanism">
@@ -353,7 +576,8 @@
 
 <footer>
   Anonymous project page for an ICLR 2027 submission under double-blind review.<br>
-  Anonymized code, pre-collected activation datasets, and real-robot evaluation rollouts are provided in the supplementary material.
+  Pre-collected activation datasets are available anonymously: <a href="https://anonymous-hf.com/a/7no77r4xdeyr/" target="_blank" rel="noopener">\(\pi_{0.5}\)-DROID activations</a> &middot; <a href="https://anonymous-hf.com/a/cg8oedr87jzh/" target="_blank" rel="noopener">VLA simulation activations</a>.<br>
+  Anonymized code and real-robot evaluation rollouts are provided in the supplementary material.
 </footer>
 
 </div>
