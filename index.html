@@ -692,12 +692,6 @@
   <p>Transferred conceptors retain most of the gain of the self-fit configuration, and in several cases match or exceed it. On LIBERO, a conceptor fit on <i>Mug+Micro</i> lifts <i>Cheese+Butter</i> by +0.80, and on RoboCasa a <i>Coffee Setup</i> conceptor lifts <i>Open Drawer</i> by +0.60, both without any refitting on the target task. Shared failure structure, not shared success structure, drives these gains.</p>
 </section>
 
-<section id="limitations">
-  <h2>Limitations and Broader Impact</h2>
-  <p><b>Limitations.</b> Contrastive conceptors require both success and failure rollouts; uniformly successful tasks fall back to positive-only steering, which is safe but can be less effective. Tasks with nearly disjoint success and failure subspaces show smaller gains, as the overlap&ndash;efficacy relationship predicts. Whether the geometric hyperparameter selection generalizes beyond the architectures tested here remains open. The real-world evidence covers three tasks with 15 trials per condition in a single physical setup and should be read as evidence that simulation gains transfer to hardware, not as an estimate of robustness across varied scenes.</p>
-  <p><b>Broader impact.</b> COAST lowers the cost of adapting frozen robot policies, replacing fine-tuning with a handful of rollouts and a closed-form computation. Because steering acts on internal activations, a steered policy is hard to distinguish from an unmodified one from action traces alone, and the same operator could be constructed to steer toward failure-aligned behavior. Two properties bound the intervention: the steering matrix has eigenvalues in \([0,1]\) and spectral norm at most one, so it can only attenuate and never amplify activations, and it is fully specified by a stored matrix that can be logged. We recommend that deployments log applied conceptors as part of the policy specification and pair activation steering with output-level monitoring and standard physical safeguards.</p>
-</section>
-
 <footer>
   Anonymous project page for an ICLR 2027 submission under double-blind review.<br>
   Pre-collected activation datasets are available anonymously: <a href="https://anonymous-hf.com/a/7no77r4xdeyr/" target="_blank" rel="noopener">\(\pi_{0.5}\)-DROID activations</a> &middot; <a href="https://anonymous-hf.com/a/cg8oedr87jzh/" target="_blank" rel="noopener">VLA simulation activations</a>.<br>
