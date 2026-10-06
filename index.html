@@ -462,6 +462,139 @@
   <p>SFT underperforms the base policy in five settings: fine-tuning on a strictly limited budget of 30 rollouts often overfits and degrades pre-trained robustness, and scaling SFT to 200 trajectories and 1,000 steps does not close the gap. CAA applies a strictly additive shift along a single direction, and SAE steering collapses selected features back into a single additive direction; neither performs the subspace-aware scaling that conceptors provide.</p>
 </section>
 
+<section id="extended">
+  <h2>Extended Analyses</h2>
+  <p class="lead">Two appendices from the full paper that are not in the arXiv version: a stronger fine-tuning baseline with a matched tuning protocol for the steering baselines, and three tests of whether COAST only helps undertrained policies.</p>
+
+  <details class="appendix" open>
+    <summary>Stronger fine-tuning baseline and matched tuning protocol for steering baselines <span class="tag">Appendix B</span></summary>
+    <div class="inner">
+      <h3 style="margin-top:14px;">SFT with 200 trajectories and up to 1,000 steps</h3>
+      <p>The SFT baseline in the main results uses 30 on-policy rollouts per task and 200 LoRA steps. To test whether its underperformance is an artifact of a starved budget, we scale the same filtered-BC recipe to 200 on-policy rollouts per task for \(\pi_{0.5}\) on MetaWorld and train for up to 1,000 steps, evaluating merged checkpoints at 200, 500, 800, and 1,000 steps on 30 held-out test rollouts per cell. Successful episodes among the 200 rollouts become training samples. &ldquo;Base&rdquo; is the pooled base-policy success rate over the 200 collection rollouts and therefore differs from the 30-rollout test-set base in the main table.</p>
+      <div class="tablewrap">
+      <table>
+        <thead><tr><th class="l">Task</th><th>Base</th><th>200</th><th>500</th><th>800</th><th>1,000</th><th>\(\Delta\)</th></tr></thead>
+        <tbody>
+          <tr><td>coffee-push</td><td>77.5</td><td>90</td><td>80</td><td>93</td><td>90</td><td class="delta">+13</td></tr>
+          <tr><td>faucet-close</td><td>78.5</td><td>90</td><td>70</td><td>80</td><td>90</td><td class="delta">+12</td></tr>
+          <tr><td>disassemble</td><td>54.0</td><td>53</td><td>13</td><td>53</td><td>63</td><td class="delta">+9</td></tr>
+          <tr><td>reach</td><td>79.0</td><td>77</td><td>77</td><td>80</td><td>83</td><td class="delta">+4</td></tr>
+          <tr><td>pick-place</td><td>69.5</td><td>90</td><td>70</td><td>67</td><td>73</td><td class="delta">+4</td></tr>
+          <tr><td>push</td><td>87.5</td><td>87</td><td>80</td><td>87</td><td>87</td><td>0</td></tr>
+          <tr><td>stick-push</td><td>25.5</td><td>30</td><td>20</td><td>27</td><td>20</td><td class="neg">&minus;6</td></tr>
+          <tr><td>coffee-pull</td><td>91.0</td><td>83</td><td>90</td><td>70</td><td>77</td><td class="neg">&minus;14</td></tr>
+          <tr><td>plate-slide-back</td><td>54.0</td><td>3</td><td>13</td><td>37</td><td>43</td><td class="neg">&minus;11</td></tr>
+          <tr><td>pick-place-wall</td><td>39.5</td><td>10</td><td>13</td><td>10</td><td>3</td><td class="neg">&minus;37</td></tr>
+          <tr><td><b>Mean</b></td><td><b>65.6</b></td><td>61.3</td><td>52.6</td><td>60.4</td><td>62.9</td><td class="neg"><b>&minus;2.7</b></td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tnote">Filtered-BC SFT with 200 on-policy rollouts per task, \(\pi_{0.5}\) on MetaWorld ML45 (success rate in %, 30 held-out test rollouts per cell). \(\Delta\) compares the 1,000-step checkpoint with the base policy.</p>
+      <p>Two findings stand out. First, more data and more steps do not close the gap: the best step count (1,000) still averages 2.7 points below the base policy, and performance is non-monotonic across steps (52.6% at step 500), indicating instability of the merged adapters at this data scale. Second, SFT regresses exactly where COAST gains most. SFT&rsquo;s largest regression is <i>pick-place-wall</i> (39.5 &rarr; 3), the same task on which COAST produces its largest gain from only 15 rollouts (0.20 &rarr; 0.87 under global steering on held-out rollouts). Over the same ten tasks, COAST gains +0.25 from 15 rollouts.</p>
+      <p>We stress the scope of this comparison. It shows that COAST outperforms the evaluated LoRA-based filtered-BC recipe at two data budgets; it does not show that COAST is better than every way of updating the policy through training. We do not compare against other fine-tuning recipes or reinforcement-learning post-training, and claims about gradient-based adaptation should be read as relative to the evaluated SFT baseline.</p>
+
+      <h3>CAA and SAE under COAST&rsquo;s train/test protocol</h3>
+      <p>In the main results, the CAA and SAE baselines selected their steering strength post hoc on the 30 held-out test rollouts, whereas COAST selected its configuration on the 15 fitting rollouts only. This asymmetry favors the baselines. To remove it, we re-ran CAA and SAE under COAST&rsquo;s exact train/test protocol with wider hyperparameter grids, so that every method evaluates the same number of configurations per task:</p>
+      <ul class="plain">
+        <li><b>CAA:</b> \(\alpha \in \{0.1, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 5.0\}\) (9 configurations per task);</li>
+        <li><b>SAE:</b> \(\alpha \in \{0.1, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0\}\) (9 configurations per task);</li>
+        <li><b>COAST:</b> aperture \(\alpha \in \{0.1, 0.5, 1.0\}\) &times; strength \(\beta \in \{0.1, 0.3, 0.5\}\) (9 configurations per task).</li>
+      </ul>
+      <p>All methods use the identical 15 base-policy rollouts for activation collection and hyperparameter selection, and are evaluated on the same 30 held-out rollouts.</p>
+      <div class="tablewrap">
+      <table>
+        <thead><tr><th class="l">Suite</th><th>Base</th><th class="coast">+Global</th><th class="coast">+Per-step</th><th>+CAA (matched)</th><th>+SAE (matched)</th></tr></thead>
+        <tbody>
+          <tr><td>\(\pi_{0.5}\) LIBERO-10</td><td>0.43</td><td class="coast">0.76</td><td class="coast best">0.80</td><td>0.45</td><td>0.60</td></tr>
+          <tr><td>\(\pi_{0.5}\) RoboCasa</td><td>0.40</td><td class="coast best">0.55</td><td class="coast best">0.55</td><td>0.40</td><td>0.45</td></tr>
+          <tr><td>GR00T N1.5 RoboCasa</td><td>0.59</td><td class="coast best">0.75</td><td class="coast">0.71</td><td>0.60</td><td>0.65</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tnote">Mean success rate with CAA and SAE tuned under COAST&rsquo;s train/test protocol (9 configurations per task per method). Under the matched protocol COAST&rsquo;s margin over both baselines grows relative to the main results table, where CAA and SAE were tuned post hoc on the test set. The main table retains the original, post-hoc-tuned CAA and SAE numbers, which are an upper bound for those baselines; the matched-protocol numbers here are the like-for-like comparison.</p>
+
+      <h3>SFT rollout budget</h3>
+      <p>SFT uses \(N=30\) on-policy rollouts per task, twice the 15 rollouts available to COAST. Following the filtered-BC recipe, only action chunks from successful episodes are kept, so the effective training set is the success subset of those 30 rollouts. The larger rollout budget and the per-task LoRA fine-tune and merge give SFT a strict per-task advantage over the steering intervention. SFT&rsquo;s underperformance in the main results therefore cannot be attributed to a starved baseline.</p>
+    </div>
+  </details>
+
+  <details class="appendix" open>
+    <summary>Does COAST only help undertrained policies? <span class="tag">Appendix C</span></summary>
+    <div class="inner">
+      <p style="margin-top:4px;">The largest absolute gains in the main results (MetaWorld and LIBERO) are obtained on early checkpoints chosen for mixed success/failure outcomes, whereas the fully trained RoboCasa checkpoints show gains of +0.14 to +0.16. A natural reading is that COAST mainly recovers undertrained competence. Three analyses test this reading.</p>
+
+      <h3>Headroom analysis</h3>
+      <p>We stratify all 60 task&ndash;model cells of the main results by baseline success rate and use the global contrastive column uniformly, with no per-task strategy selection. &ldquo;Headroom recovered&rdquo; is the gain divided by \((1 - \text{Base})\).</p>
+      <div class="tablewrap">
+      <table>
+        <thead><tr><th class="l">Baseline stratum</th><th>Tasks</th><th>Base</th><th class="coast">+COAST (Global)</th><th>Gain</th><th>Headroom recovered</th></tr></thead>
+        <tbody>
+          <tr><td>Base &gt; 0.70</td><td>16</td><td>0.82</td><td class="coast">0.93</td><td class="delta">+0.10</td><td class="best">59%</td></tr>
+          <tr><td>0.40 &le; Base &le; 0.70</td><td>29</td><td>0.58</td><td class="coast">0.81</td><td class="delta">+0.22</td><td>54%</td></tr>
+          <tr><td>Base &lt; 0.40</td><td>15</td><td>0.20</td><td class="coast">0.45</td><td class="delta">+0.26</td><td>32%</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tnote">Gain and fraction of headroom recovered by COAST (global) as a function of baseline success rate, over the 60 task&ndash;model cells of the main results.</p>
+      <p>Absolute gains shrink as baselines rise because the available headroom shrinks. The fraction of headroom recovered, however, rises from 32% on low-baseline tasks to 59% on high-baseline tasks. If COAST only recovered undertrained competence, this fraction would fall on strong tasks; it does the opposite.</p>
+
+      <h3>Fully trained checkpoints</h3>
+      <p>All three RoboCasa checkpoints are fully trained production checkpoints. COAST adds +0.14 to +0.16 on each, all significant under the pooled \(z\)-test. On the GR00T N1.5 tasks whose baseline is already high (base \(\ge 0.67\): Close Fridge, PP Cabinet, PP Stove, Kettle), COAST adds +0.15 on average with zero regressions.</p>
+      <div class="tablewrap">
+      <table>
+        <thead><tr><th class="l">Fully trained checkpoint</th><th>Base</th><th class="coast">+COAST</th><th>Gain</th><th>Significance</th></tr></thead>
+        <tbody>
+          <tr><td>\(\pi_{0.5}\) RoboCasa (75k steps)</td><td>0.40</td><td class="coast best">0.56</td><td class="delta">+0.16</td><td>\(p_z = .009\)</td></tr>
+          <tr><td>GR00T N1.5 RoboCasa (120k steps)</td><td>0.59</td><td class="coast best">0.75</td><td class="delta">+0.16</td><td>\(p_z = .006\)</td></tr>
+          <tr><td>Diffusion Policy RoboCasa (epoch 1500)</td><td>0.32</td><td class="coast best">0.46</td><td class="delta">+0.14</td><td>\(p_z = .035\)</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tnote">COAST on fully trained RoboCasa checkpoints (global strategy for \(\pi_{0.5}\) and GR00T N1.5; per-step for Diffusion Policy).</p>
+      <p>We note that a fully trained checkpoint is not necessarily a near-state-of-the-art policy: the evaluated RoboCasa checkpoints reach 32&ndash;59% mean success, and COAST&rsquo;s value on a policy that already succeeds on most tasks is tested here only through the high-baseline stratum above and the positive-only ablation on tasks with baseline \(\ge 0.67\) (in the full paper). RoboCasa is also a harder benchmark than MetaWorld and LIBERO-10 (randomized kitchen layouts, objects, textures, and lighting), so its absolute gains are not directly comparable with those on the easier suites.</p>
+
+      <h3>Diffusion Policy epoch sweep and layer robustness</h3>
+      <p>A natural concern is that the gains from steering could depend on a favorable checkpoint, layer, or hyperparameter choice rather than reflecting a robust, generalized effect. To rule this out, we evaluate our steering mechanism across multiple stages of training, intervention layers, and parameter grids, comparing COAST against both its unsteered base policy and internal baselines under the same evaluation protocol.</p>
+      <p><b>Setup.</b> We consider five Diffusion Policy checkpoints saved at epochs 300, 600, 900, 1200, and 1500. For each checkpoint, we run the unsteered base policy on the 7 RoboCasa tasks and separately report the best steered result obtained from the same checkpoint under our steering sweep. This produces a per-epoch comparison between the base policy and its strongest steered variant. Importantly, the checkpoint set is fixed in advance and spans the training trajectory uniformly, ensuring the analysis does not rely on post hoc checkpoint cherry-picking. Additionally, to evaluate robustness across network depth, we swept over a grid of parameters for each method at every layer (0 to 11) for epoch 1500. For CAA we evaluated \(\alpha \in \{0.1, 0.5, 1.0\}\); for SAE steering \(\alpha \in \{0.5, 1.0, 2.0\}\); for COAST we swept aperture \(\alpha \in \{0.5, 1.0, 2.0\}\), steering strength \(\beta \in \{0.1, 0.3\}\), and strategy \(\in\) {global, per-step}, resulting in 12 candidate combinations per layer.</p>
+      <div class="tablewrap">
+      <table>
+        <thead><tr><th class="l">Epoch</th><th>300</th><th>600</th><th>900</th><th>1200</th><th>1500 (converged)</th></tr></thead>
+        <tbody>
+          <tr><td>Base</td><td>0.28</td><td>0.22</td><td>0.24</td><td>0.31</td><td>0.32</td></tr>
+          <tr><td>+COAST</td><td class="coast">0.35</td><td class="coast">0.33</td><td class="coast">0.35</td><td class="coast">0.43</td><td class="coast best">0.49</td></tr>
+          <tr><td>Gain</td><td class="delta">+0.07</td><td class="delta">+0.11</td><td class="delta">+0.12</td><td class="delta">+0.12</td><td class="delta">+0.16</td></tr>
+          <tr><td>Tasks improved / regressed</td><td>4/2</td><td>6/0</td><td>6/1</td><td>6/0</td><td class="best">7/0</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tnote">Diffusion Policy on RoboCasa across training epochs, aggregated over 7 tasks (\(n=210\) rollouts per cell). &ldquo;Improved / regressed&rdquo; counts tasks whose steered success rate is above / below the base checkpoint.</p>
+      <p>Three observations follow. <b>(1)</b> The gain grows monotonically with training, from +0.07 at epoch 300 to +0.16 at epoch 1500; the largest absolute gain occurs at the most converged checkpoint, not the least. <b>(2)</b> Regressions vanish as the policy converges: at epoch 300 two tasks degrade under steering, whereas at epoch 1500 all 7 tasks improve with zero regressions (one-sided sign test, \(p = .008\)). Steering is more reliable on a better-trained policy, because the behaviors it modulates are better formed. <b>(3)</b> Steering and training compose rather than substitute. Base performance is nearly flat from epoch 300 to 1500 (+0.046), while steering at epoch 300 already yields +0.07; the steered epoch-300 policy (0.35) outperforms the unsteered fully trained epoch-1500 policy (0.32), and the combination (0.49) exceeds either alone. Continuing to train these checkpoints is therefore not a substitute for steering.</p>
+      <div class="tablewrap">
+      <table>
+        <thead><tr><th class="l">Task</th><th>300</th><th>600</th><th>900</th><th>1200</th><th>1500</th></tr></thead>
+        <tbody>
+          <tr><td>CloseFridge</td><td>0.57 &rarr; 0.53</td><td>0.27 &rarr; <b>0.30</b></td><td>0.40 &rarr; <b>0.47</b></td><td>0.40 &rarr; <b>0.43</b></td><td>0.43 &rarr; <b>0.60</b></td></tr>
+          <tr><td>CoffeeSetupMug</td><td>0.00 &rarr; &ndash;</td><td>0.03 &rarr; 0.03</td><td>0.03 &rarr; <b>0.07</b></td><td>0.13 &rarr; <b>0.20</b></td><td>0.13 &rarr; <b>0.23</b></td></tr>
+          <tr><td>OpenDrawer</td><td>0.07 &rarr; <b>0.17</b></td><td>0.03 &rarr; <b>0.17</b></td><td>0.03 &rarr; <b>0.10</b></td><td>0.07 &rarr; <b>0.20</b></td><td>0.10 &rarr; <b>0.33</b></td></tr>
+          <tr><td>OpenStandMixerHead</td><td>0.60 &rarr; <b>0.83</b></td><td>0.63 &rarr; <b>0.87</b></td><td>0.57 &rarr; <b>0.80</b></td><td>0.53 &rarr; <b>0.87</b></td><td>0.63 &rarr; <b>0.87</b></td></tr>
+          <tr><td>PickPlaceCounterToCabinet</td><td>0.20 &rarr; <b>0.30</b></td><td>0.13 &rarr; <b>0.23</b></td><td>0.20 &rarr; <b>0.40</b></td><td>0.30 &rarr; <b>0.53</b></td><td>0.30 &rarr; <b>0.57</b></td></tr>
+          <tr><td>PickPlaceCounterToStove</td><td>0.13 &rarr; 0.10</td><td>0.07 &rarr; <b>0.10</b></td><td>0.10 &rarr; 0.07</td><td>0.13 &rarr; 0.13</td><td>0.10 &rarr; <b>0.13</b></td></tr>
+          <tr><td>TurnOnElectricKettle</td><td>0.37 &rarr; <b>0.50</b></td><td>0.40 &rarr; <b>0.63</b></td><td>0.33 &rarr; <b>0.57</b></td><td>0.60 &rarr; <b>0.67</b></td><td>0.57 &rarr; <b>0.67</b></td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="tnote">Task performance across training steps: base &rarr; best steered configuration from the sweep, per Diffusion Policy checkpoint (epochs 300&ndash;1500). Bold marks cells where steering improves on the base checkpoint.</p>
+      <p><b>Results.</b> The improvement from steering is not isolated to one stage of training. Across all evaluated epochs, the steered policy consistently matches or improves upon the corresponding base checkpoint. This is especially important because the absolute base performance varies substantially with the epoch, yet the relative advantage of steering remains present across the entire sweep.</p>
+      <figure>
+        <img src="figures/layer_robustness.png" alt="Two rows of five line plots (one per RoboCasa task) showing steering performance versus layer 0-11 for COAST, CAA, SAE, and the unsteered baseline: normalized success rate of the top-3 configurations with min-max bands, and absolute peak success rate.">
+        <figcaption><b>Steering performance by layer.</b> (a) Normalized success rate using the top-3 parameter combinations per method at each layer; the solid line is the mean of the top-3 configurations and the shaded band the min&ndash;max spread. COAST was evaluated over 12 combinations (\(\alpha\), \(\beta\), strategy), CAA over 3 (\(\alpha\)), and SAE over 2 (\(\alpha\)). (b) Absolute peak success rate achieved at each layer. COAST consistently outperforms both the unsteered baseline and the CAA/SAE steering methods across tasks and layers, with low variance and high robustness to layer selection.</figcaption>
+      </figure>
+      <p>COAST demonstrates strong performance robustness across different model layers. Plotting the mean and variance of the top-3 parameter combinations at each layer (a) reveals that COAST not only achieves a higher normalized success rate than CAA and SAE across almost all layers, but also maintains a highly stable performance band. The absolute maximum success rate at each layer (b) shows that across five distinct RoboCasa tasks, COAST consistently outperforms the baselines, and the performance variance between adjacent layers is relatively small.</p>
+      <p><b>Discussion.</b> These results strengthen the claim that the steering effect is genuine and broadly applicable. Because every checkpoint is evaluated independently against its own base model, the gains shown across early, middle, and late checkpoints confirm that the intervention is compatible with the learned policy throughout training. Similarly, the layer and hyperparameter analysis indicates that conceptor-based steering is not overly brittle or sensitive to the exact layer of intervention, provided our efficient hyperparameter selection heuristic is applied. Together, these findings demonstrate that COAST provides holistic, resilient improvements independent of specific model configurations.</p>
+    </div>
+  </details>
+</section>
+
 <section id="real">
   <h2>Real-Robot Results</h2>
   <div>
