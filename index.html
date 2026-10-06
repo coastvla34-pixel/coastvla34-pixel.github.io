@@ -473,15 +473,10 @@
           <tr><td>Open Drawer</td><td>5/10</td><td>0.33 (5/15) [0.15, 0.58]</td><td class="coast best">0.86 (13/15) [0.62, 0.96]</td><td class="delta">+0.53</td></tr>
           <tr><td>Close Microwave</td><td>1/14</td><td>0.07 (1/15) [0.01, 0.30]</td><td class="coast best">0.46 (7/15) [0.25, 0.70]</td><td class="delta">+0.39</td></tr>
           <tr><td>Put Duck in Cabinet</td><td>2/13</td><td>0.13 (2/15) [0.04, 0.38]</td><td class="coast best">0.40 (6/15) [0.20, 0.64]</td><td class="delta">+0.27</td></tr>
-          <tr><td>Place Banana on Plate</td><td>5/10</td><td>0.33 (5/15) [0.15, 0.58]</td><td class="coast best">0.67 (10/15) [0.41, 0.85]</td><td class="delta">+0.34</td></tr>
         </tbody>
       </table>
       </div>
-      <p class="tnote">15 trials per task and condition; brackets are Wilson 95% confidence intervals. &ldquo;Fitting S/F&rdquo; is the success/failure split of the 15 base-policy rollouts used to fit the conceptor. With 15 trials the intervals are wide, and base and COAST intervals are disjoint only for <i>Open Drawer</i>. The mean absolute gain is +0.40 over the three main tasks and +0.38 over all four. \(\pi_0\)-FAST and GR00T N1.5 reach at most 0.26 on any of the three main tasks.</p>
-    <figure style="max-width:340px;margin:18px auto 6px;">
-      <img src="figures/success_rate_comparison.png" alt="Horizontal bar chart of real-robot success rates for pi0.5 with COAST, pi0.5, pi0-FAST, and GR00T on Open Drawer, Close Microwave, and Put Duck on Cabinet.">
-      <figcaption><b>Real-robot success rates</b> for \(\pi_{0.5}\)+COAST, \(\pi_{0.5}\), \(\pi_0\)-FAST, and GR00T N1.5 on the three main tasks.</figcaption>
-    </figure>
+      <p class="tnote">15 trials per task and condition; brackets are Wilson 95% confidence intervals. &ldquo;Fitting S/F&rdquo; is the success/failure split of the 15 base-policy rollouts used to fit the conceptor. With 15 trials the intervals are wide, and base and COAST intervals are disjoint only for <i>Open Drawer</i>. The mean absolute gain is +0.40 over the three tasks. \(\pi_0\)-FAST and GR00T N1.5 reach at most 0.26 on any of the three main tasks.</p>
   </div>
 
 
@@ -516,14 +511,13 @@
           <tr><td>Open Drawer</td><td>5</td><td>5.0</td><td>0.2</td><td class="l">&ldquo;open upper left drawer&rdquo;</td><td>700</td></tr>
           <tr><td>Close Microwave</td><td>5</td><td>3.5</td><td>0.1</td><td class="l">&ldquo;close the microwave door tightly&rdquo;</td><td>500</td></tr>
           <tr><td>Put Duck in Cabinet</td><td>5</td><td>0.2</td><td>0.1</td><td class="l">&ldquo;put duck on cabinet&rdquo;</td><td>200</td></tr>
-          <tr><td>Place Banana on Plate</td><td>5</td><td>5.0</td><td>0.1</td><td class="l">&ldquo;place yellow banana on black plate&rdquo;</td><td>300</td></tr>
         </tbody>
       </table>
       </div>
 
-      <h3>Fourth task and scope of the real-world evidence</h3>
-      <p>In addition to the three tasks in the main text, we evaluate a fourth task, <i>Place Banana on Plate</i>, in which the robot must pick up a yellow banana from the middle shelf and place it onto a black plate on the table; this provides an object-placement configuration distinct from the original three tasks. On <i>Close Microwave</i>, the success conceptor is fit from a single successful base-policy episode.</p>
-      <p>This evaluation is deliberately reported with its limitations. It covers four tasks with 15 trials per condition in a single physical setup, and the confidence intervals are correspondingly wide: the base and COAST intervals are disjoint only for <i>Open Drawer</i>. The results should therefore be read as evidence that the simulation gains transfer to hardware on the evaluated tasks, not as an estimate of robustness across varied real-world scenes. All 15 COAST evaluation rollouts per task and the base-policy activations used for fitting are provided through an anonymized link in the supplementary material.</p>
+      <h3>Scope of the real-world evidence</h3>
+      <p>On <i>Close Microwave</i>, the success conceptor is fit from a single successful base-policy episode.</p>
+      <p>This evaluation is deliberately reported with its limitations. It covers three tasks with 15 trials per condition in a single physical setup, and the confidence intervals are correspondingly wide: the base and COAST intervals are disjoint only for <i>Open Drawer</i>. The results should therefore be read as evidence that the simulation gains transfer to hardware on the evaluated tasks, not as an estimate of robustness across varied real-world scenes. All 15 COAST evaluation rollouts per task and the base-policy activations used for fitting are provided through an anonymized link in the supplementary material.</p>
     </div>
   </details>
 </section>
@@ -567,7 +561,7 @@
 
 <section id="limitations">
   <h2>Limitations and Broader Impact</h2>
-  <p><b>Limitations.</b> Contrastive conceptors require both success and failure rollouts; uniformly successful tasks fall back to positive-only steering, which is safe but can be less effective. Tasks with nearly disjoint success and failure subspaces show smaller gains, as the overlap&ndash;efficacy relationship predicts. Whether the geometric hyperparameter selection generalizes beyond the architectures tested here remains open. The real-world evidence covers four tasks with 15 trials per condition in a single physical setup and should be read as evidence that simulation gains transfer to hardware, not as an estimate of robustness across varied scenes.</p>
+  <p><b>Limitations.</b> Contrastive conceptors require both success and failure rollouts; uniformly successful tasks fall back to positive-only steering, which is safe but can be less effective. Tasks with nearly disjoint success and failure subspaces show smaller gains, as the overlap&ndash;efficacy relationship predicts. Whether the geometric hyperparameter selection generalizes beyond the architectures tested here remains open. The real-world evidence covers three tasks with 15 trials per condition in a single physical setup and should be read as evidence that simulation gains transfer to hardware, not as an estimate of robustness across varied scenes.</p>
   <p><b>Broader impact.</b> COAST lowers the cost of adapting frozen robot policies, replacing fine-tuning with a handful of rollouts and a closed-form computation. Because steering acts on internal activations, a steered policy is hard to distinguish from an unmodified one from action traces alone, and the same operator could be constructed to steer toward failure-aligned behavior. Two properties bound the intervention: the steering matrix has eigenvalues in \([0,1]\) and spectral norm at most one, so it can only attenuate and never amplify activations, and it is fully specified by a stored matrix that can be logged. We recommend that deployments log applied conceptors as part of the policy specification and pair activation steering with output-level monitoring and standard physical safeguards.</p>
 </section>
 
