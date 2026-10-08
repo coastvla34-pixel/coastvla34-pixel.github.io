@@ -203,6 +203,7 @@
   .hpsmall { font-size: 12px; color: var(--muted); white-space: nowrap; }
   tr.summ td { font-weight: 600; background: #f6f4ef; }
   details.appendix table { min-width: 560px; }
+  details.appendix h4 { font-size: 15.5px; margin: 14px 0 6px; }
   footer { border-top: 1px solid var(--line); padding-block: 28px 48px; color: var(--muted); font-size: 14px; text-align: center; }
   .katex { font-size: 1.05em; }
   .katex-display { margin: 10px 0 14px; overflow-x: auto; overflow-y: hidden; }
@@ -1005,17 +1006,17 @@
       <p><b>Discussion.</b> These results strengthen the claim that the steering effect is genuine and broadly applicable. Because every checkpoint is evaluated independently against its own base model, the gains shown across early, middle, and late checkpoints confirm that the intervention is compatible with the learned policy throughout training. Similarly, the layer and hyperparameter analysis indicates that conceptor-based steering is not overly brittle or sensitive to the exact layer of intervention, provided our efficient hyperparameter selection heuristic is applied. Together, these findings demonstrate that COAST provides holistic, resilient improvements independent of specific model configurations.</p>
     </div>
   </details>
-</section>
-
-<section id="mechanism">
-  <h2>Why Does a Closed-Form Gate Work?</h2>
+  <details class="appendix">
+    <summary>Why does a closed-form gate work, and why does steering transfer across tasks? <span class="tag">Mechanism and transfer</span></summary>
+    <div class="inner">
+      <h3 style="margin-top:14px;">Why Does a Closed-Form Gate Work?</h3>
   <p>We identify three geometric facts about the action expert&rsquo;s hidden states that explain the double-digit gains.</p>
 
   <div class="two">
     <div>
-      <h3>1. Outcome-relevant computation is low-rank, but not rank-one</h3>
+      <h4>1. Outcome-relevant computation is low-rank, but not rank-one</h4>
       <p>Although the \(\pi_{0.5}\) residual stream is 1024-dimensional, the eigenvalue spectra of both success and failure conceptors decay sharply across all steered MetaWorld tasks. The Boolean contrastive operation cancels the dimensions shared by both outcomes, reducing the effective steering subspace to roughly one percent of the hidden dimension. Yet this subspace is strictly multi-dimensional: additive steering along a single mean-difference vector (CAA) recovers only partial gains.</p>
-      <h3>2. Subspace overlap predicts steering efficacy</h3>
+      <h4>2. Subspace overlap predicts steering efficacy</h4>
       <p>Per-task gain correlates strongly with the success&ndash;failure overlap (Spearman \(\rho = 0.59\), \(p = 0.002\)),</p>
       $$\mathrm{sim}(C^{+}, C^{-}) = \frac{\mathrm{tr}(C^{+}C^{-})}{\sqrt{\mathrm{tr}((C^{+})^2)\,\mathrm{tr}((C^{-})^2)}}.$$
       <p>When the subspaces overlap heavily, the thin residual directions distinguishing them are exactly what AND-NOT isolates. Overlap needs only one matrix product and no rollouts, so it doubles as a cheap diagnostic of where steering will help most.</p>
@@ -1026,22 +1027,22 @@
     </figure>
   </div>
 
-  <h3>3. Steering reshapes the activation geometry toward success</h3>
+  <h4>3. Steering reshapes the activation geometry toward success</h4>
   <figure>
     <img src="figures/combined_pca_temporal.png" alt="Panel A: activations projected onto the top two eigenvectors of the steering conceptor with baseline success and failure ellipses and steered points. Panel B: projection onto the first eigenvector over normalized trajectory time.">
     <figcaption><b>Conceptor steering pulls activations toward the success region.</b> <b>(A)</b> Per-step activations projected onto the top two eigenvectors of \(C_{\text{steer}}\), the subspace maximally separating baseline success from failure. Solid ellipses: baseline \(2\sigma\) regions; dashed: steered; large markers: centroids. <b>(B)</b> Projection onto \(v_1(C_{\text{steer}})\) over normalized trajectory time (means \(\pm 1\sigma\)).</figcaption>
   </figure>
   <p>The key observation is that steered centroids shift toward the baseline-success centroid and away from the baseline-failure centroid. Over trajectory time, steered successes consistently track the baseline-success mean, while steered failures either sustain a partial shift or revert to the baseline-failure trajectory. The physical outcome closely tracks which distribution the activations align with, confirming that these regions are linked to task execution rather than merely descriptive.</p>
-</section>
 
-<section id="transfer">
-  <h2>Tasks Share Failure Geometry, Enabling Cross-Task Steering</h2>
+      <h3 style="margin-top:22px;">Tasks Share Failure Geometry, Enabling Cross-Task Steering</h3>
   <p>Success activations cluster tightly and uniformly across tasks, while failure activations spread into distinct, task-specific regions. Because the contrastive conceptor acts subtractively along failure directions, a conceptor fitted on one <i>source</i> task should also help a different <i>target</i> task whenever their failure subspaces overlap.</p>
   <figure>
     <img src="figures/sim_vs_sr_gain.png" alt="Left: joint PCA of LIBERO activations showing task-specific failure regions and uniform success clusters. Right: transfer gain against failure-subspace containment shows a positive correlation, while success containment shows none.">
     <figcaption><b>Tasks share failure geometry but not success geometry.</b> <i>Left:</i> Joint PCA of layer-11 activations on \(\pi_{0.5}\) LIBERO with \(2\sigma\) ellipses per task; failure activations (top) spread into task-specific regions, success activations (bottom) cluster uniformly. <i>Right:</i> Each dot is one source&rarr;target pair on LIBERO or RoboCasa. Failure-subspace containment \(\mathrm{tr}(C^f_{\mathrm{src}} C^f_{\mathrm{tgt}})/\mathrm{tr}((C^f_{\mathrm{src}})^2)\) correlates with transfer gain (top; \(r = 0.30\) and \(0.49\), \(p < 0.005\)); success containment does not (bottom; \(|r| < 0.13\), \(p > 0.4\)).</figcaption>
   </figure>
   <p>Transferred conceptors retain most of the gain of the self-fit configuration, and in several cases match or exceed it. On LIBERO, a conceptor fit on <i>Mug+Micro</i> lifts <i>Cheese+Butter</i> by +0.80, and on RoboCasa a <i>Coffee Setup</i> conceptor lifts <i>Open Drawer</i> by +0.60, both without any refitting on the target task. Shared failure structure, not shared success structure, drives these gains.</p>
+    </div>
+  </details>
 </section>
 
 <footer>
