@@ -225,7 +225,6 @@
     <a class="btn secondary" href="paper.pdf" title="Full submission PDF with the extended appendix (real-robot protocol, confidence intervals, and additional ablations).">Full PDF (extended appendix)</a>
     <a class="btn secondary" href="#rollouts">Robot videos</a>
     <a class="btn secondary" href="#sim-rollouts">Simulation videos</a>
-    <a class="btn secondary" href="#results">Results</a>
     <a class="btn secondary" href="https://anonymous-hf.com/a/7no77r4xdeyr/" target="_blank" rel="noopener" title="Anonymized dataset: real-robot π0.5-DROID activations (pi05_droid_activation)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
       <span>Data: \(\pi_{0.5}\)-DROID activations</span>
@@ -339,43 +338,8 @@
       </div>
     </div>
   </div>
-  <p class="tnote" style="margin-top:14px;">Clips are unedited rollouts from the 15-trial evaluation, played at 2&times; speed. Full protocol, per-task hyperparameters, and confidence intervals are in the <a href="#real">Real-Robot Results</a> section.</p>
-</section>
-
-<script>
-(function () {
-  var tabs = document.querySelectorAll('.task-tab');
-  var panels = document.querySelectorAll('.task-panel');
-  function show(key) {
-    tabs.forEach(function (t) {
-      var on = t.dataset.task === key;
-      t.classList.toggle('is-active', on);
-      t.setAttribute('aria-selected', on ? 'true' : 'false');
-    });
-    panels.forEach(function (p) {
-      var on = p.id === 'task-' + key;
-      p.classList.toggle('is-active', on);
-      p.querySelectorAll('.compare video').forEach(function (v) {
-        if (on) {
-          if (v.preload === 'none') { v.preload = 'metadata'; v.load(); }
-          v.play().catch(function () {});
-        } else {
-          v.pause();
-        }
-      });
-      if (!on) p.querySelectorAll('.trials video').forEach(function (v) { v.pause(); });
-    });
-  }
-  tabs.forEach(function (t) { t.addEventListener('click', function () { show(t.dataset.task); }); });
-  show('put_duck');
-})();
-</script>
-
-<section id="real">
-  <h2>Real-Robot Results</h2>
-  <div>
-      <p>We test on the DROID platform with the released \(\pi_{0.5}\)-DROID policy, which was not fine-tuned on any demonstrations of these tasks. The tasks have very different dynamics: opening, closing, and pick-and-place. Across the three main tasks, \(\pi_{0.5}\)+COAST achieves the highest success rate with a 40% average absolute improvement, and the largest gain on the challenging <i>Open Drawer</i> task. On <i>Close Microwave</i>, the success conceptor was fit from a single successful base-policy episode.</p>
-      <div class="tablewrap">
+  <p class="tnote" style="margin-top:14px;">Clips are unedited rollouts from the 15-trial evaluation, played at 2&times; speed. Full protocol, per-task hyperparameters, and confidence intervals are in the table and appendix below.</p>
+  <div class="tablewrap" style="margin-top:22px;">
       <table>
         <thead><tr><th class="l">Task</th><th>Fitting S/F</th><th>\(\pi_{0.5}\) [95% CI]</th><th class="coast">\(\pi_{0.5}\) + COAST [95% CI]</th><th>Gain</th></tr></thead>
         <tbody>
@@ -385,11 +349,7 @@
         </tbody>
       </table>
       </div>
-      <p class="tnote">15 trials per task and condition; brackets are Wilson 95% confidence intervals. &ldquo;Fitting S/F&rdquo; is the success/failure split of the 15 base-policy rollouts used to fit the conceptor. With 15 trials the intervals are wide, and base and COAST intervals are disjoint only for <i>Open Drawer</i>. The mean absolute gain is +0.40 over the three tasks. \(\pi_0\)-FAST and GR00T N1.5 reach at most 0.26 on any of the three main tasks.</p>
-  </div>
-
-
-  <details class="appendix" open>
+<details class="appendix">
     <summary>Real-world evaluation: protocol, calibration data, and hyperparameters <span class="tag">Extended appendix</span></summary>
     <div class="inner">
       <p>We use the DROID robot setup, which consists of a 7-DoF Franka Emika Panda arm, a Robotiq 2F-85 parallel-jaw gripper, a wrist-mounted ZED Mini RGB-D camera, and two side-mounted ZED 2 stereo cameras. This setup enables the generalist \(\pi_{0.5}\)-DROID checkpoint to be run directly; the policy is the released checkpoint and is not fine-tuned on any demonstrations of the evaluated tasks. Activations are captured from the action expert&rsquo;s residual stream at layers \(\{0, 5, 11, 17\}\) during every inference call.</p>
@@ -429,6 +389,62 @@
       <p>This evaluation is deliberately reported with its limitations. It covers three tasks with 15 trials per condition in a single physical setup, and the confidence intervals are correspondingly wide: the base and COAST intervals are disjoint only for <i>Open Drawer</i>. The results should therefore be read as evidence that the simulation gains transfer to hardware on the evaluated tasks, not as an estimate of robustness across varied real-world scenes. All 15 COAST evaluation rollouts per task and the base-policy activations used for fitting are provided through an anonymized link in the supplementary material.</p>
     </div>
   </details>
+</section>
+
+<script>
+(function () {
+  var tabs = document.querySelectorAll('.task-tab');
+  var panels = document.querySelectorAll('.task-panel');
+  function show(key) {
+    tabs.forEach(function (t) {
+      var on = t.dataset.task === key;
+      t.classList.toggle('is-active', on);
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    panels.forEach(function (p) {
+      var on = p.id === 'task-' + key;
+      p.classList.toggle('is-active', on);
+      p.querySelectorAll('.compare video').forEach(function (v) {
+        if (on) {
+          if (v.preload === 'none') { v.preload = 'metadata'; v.load(); }
+          v.play().catch(function () {});
+        } else {
+          v.pause();
+        }
+      });
+      if (!on) p.querySelectorAll('.trials video').forEach(function (v) { v.pause(); });
+    });
+  }
+  tabs.forEach(function (t) { t.addEventListener('click', function () { show(t.dataset.task); }); });
+  show('put_duck');
+})();
+</script>
+
+<section id="setup">
+  <h2>Experimental Setup</h2>
+  <figure>
+    <img src="figures/envs_figure.jpg" alt="Six panels: MetaWorld ML45, LIBERO-10, and RoboCasa simulation scenes, and three real-robot tasks: Open Drawer, Close Microwave, and Put Duck on Cabinet.">
+    <figcaption><b>Environments.</b> Three simulation benchmarks of increasing difficulty, MetaWorld ML45, LIBERO-10, and a RoboCasa subset, plus real-robot tasks on the DROID platform (7-DoF Franka Panda, Robotiq 2F-85 gripper).</figcaption>
+  </figure>
+  <div class="two">
+    <div>
+      <h3>Policies</h3>
+      <ul class="plain">
+        <li><b>\(\pi_{0.5}\)</b> (flow-matching VLA): MetaWorld, LIBERO, RoboCasa, real robot</li>
+        <li><b>\(\pi_0\)-FAST</b> (autoregressive VLA): MetaWorld, LIBERO, real robot</li>
+        <li><b>GR00T N1.5</b> (flow-matching VLA): RoboCasa, real robot</li>
+        <li><b>Diffusion Policy</b> (non-VLA diffusion baseline): RoboCasa</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Protocol</h3>
+      <ul class="plain">
+        <li><b>Strict train/test split:</b> 15 fitting rollouts to build conceptors and choose hyperparameters, 30 held-out test rollouts with unseen environment configurations.</li>
+        <li><b>Baselines:</b> Contrastive Activation Addition (CAA), Sparse Autoencoder (SAE) steering, and LoRA supervised fine-tuning (SFT) on 30 on-policy rollouts per task, twice COAST&rsquo;s fitting budget.</li>
+        <li><b>Real robot:</b> the released \(\pi_{0.5}\)-DROID checkpoint, not fine-tuned on any demonstrations of the evaluated tasks, 15 trials per task and condition.</li>
+      </ul>
+    </div>
+  </div>
 </section>
 
 <section id="sim-rollouts">
@@ -583,7 +599,7 @@
     <details class="appendix">
       <summary>Per-task steering results on MetaWorld ML45: the full 45-task picture <span class="tag">Appendix F.6, Tables 20, 26, 27</span></summary>
       <div class="inner">
-      <p>Per-task results behind the MetaWorld ML45 numbers in the main table. Contrastive steering is applied to the 26 (\(\pi_{0.5}\)) and 27 (\(\pi_0\)-FAST) tasks whose base policy produces both successes and failures; the remaining high-baseline tasks are covered by the positive-only check at the bottom, so together the tables span the full 45-task training suite.</p>
+      <p>Per-task results behind the MetaWorld ML45 numbers in the paper&rsquo;s main table (Table 1). Contrastive steering is applied to the 26 (\(\pi_{0.5}\)) and 27 (\(\pi_0\)-FAST) tasks whose base policy produces both successes and failures; the remaining high-baseline tasks are covered by the positive-only check at the bottom, so together the tables span the full 45-task training suite.</p>
       <h3 style="margin-top:14px;">\(\pi_{0.5}\): all 26 steered tasks (Appendix Table 26)</h3>
       <p>Best success rate per strategy over \(\alpha \in \{0.1, 0.5, 1.0\}\), \(\beta \in \{0.1, 0.3, 0.5\}\) at layer 11; 30 held-out test rollouts per condition. Bold marks the best steered value in a row when it beats the baseline.</p>
 <div class="tablewrap"><table><thead><tr><th class="l">Task</th><th>Baseline</th><th>Global</th><th>Per-Step</th><th>Pos.-Only</th></tr></thead><tbody>
@@ -734,7 +750,7 @@
     <details class="appendix">
       <summary>Per-task steering results on LIBERO-10 <span class="tag">Appendix Tables 23, 24</span></summary>
       <div class="inner">
-      <p>Per-task results behind the LIBERO-10 rows of the main table, for both models. Each cell is the best success rate for that strategy with its selected layer, aperture \(\alpha\), and strength \(\beta\); 30 held-out test rollouts per condition.</p>
+      <p>Per-task results behind the LIBERO-10 rows of the paper&rsquo;s main table (Table 1), for both models. Each cell is the best success rate for that strategy with its selected layer, aperture \(\alpha\), and strength \(\beta\); 30 held-out test rollouts per condition.</p>
       <h3 style="margin-top:14px;">\(\pi_{0.5}\) with layer sweep \(\ell \in \{5, 11\}\) (Appendix Table 23)</h3>
 <div class="tablewrap"><table><thead><tr><th class="l">Task</th><th>Global</th><th>Per-Step</th><th>Pos.-Only</th></tr></thead><tbody>
 <tr><td class="l">KS3: turn on the stove and put the moka pot on it</td><td class="coast"><b>0.93</b> <span class="hpsmall">(L5, \(\alpha\)=0.5, \(\beta\)=0.1)</span></td><td class="coast">0.87 <span class="hpsmall">(L5, \(\alpha\)=10.0, \(\beta\)=0.3)</span></td><td class="coast">0.80 <span class="hpsmall">(L11, \(\alpha\)=1.0, \(\beta\)=0.1)</span></td></tr>
@@ -811,7 +827,7 @@
     <details class="appendix">
       <summary>Per-task steering results on RoboCasa <span class="tag">Appendix Tables 25, 28</span></summary>
       <div class="inner">
-      <p>Per-task results behind the RoboCasa rows of the main table. Each cell is the best success rate for that strategy with its selected layer, aperture \(\alpha\), and strength \(\beta\); 30 held-out test rollouts per condition. For the per-step strategy, \(t\) is the denoising step whose conceptor was selected.</p>
+      <p>Per-task results behind the RoboCasa rows of the paper&rsquo;s main table (Table 1). Each cell is the best success rate for that strategy with its selected layer, aperture \(\alpha\), and strength \(\beta\); 30 held-out test rollouts per condition. For the per-step strategy, \(t\) is the denoising step whose conceptor was selected.</p>
       <h3 style="margin-top:14px;">\(\pi_{0.5}\) with layer sweep \(\ell \in \{5, 11\}\) (Appendix Table 25)</h3>
 <div class="tablewrap"><table><thead><tr><th class="l">Task</th><th>Global</th><th>Per-Step</th><th>Pos.-Only</th></tr></thead><tbody>
 <tr><td class="l">Close Fridge</td><td class="coast"><b>0.47</b> <span class="hpsmall">(L11, \(\alpha\)=0.5, \(\beta\)=0.3)</span></td><td class="coast">0.40 <span class="hpsmall">(t=0, L11, \(\alpha\)=0.1, \(\beta\)=0.5)</span></td><td class="coast">0.40 <span class="hpsmall">(L5, \(\alpha\)=2.0, \(\beta\)=0.1)</span></td></tr>
@@ -857,77 +873,6 @@
   });
 })();
 </script>
-
-<section id="overview">
-  <figure>
-    <img src="figures/coast_overview.png" alt="Overview of COAST: success and failure rollouts are collected offline from a frozen policy, activations are extracted at one layer, success and failure conceptors are fit in closed form and composed into a contrastive conceptor, which multiplicatively gates the residual stream at inference time.">
-    <figcaption><b>Overview of COAST.</b> COAST steers a frozen robot policy at inference time by multiplicatively gating its residual stream with a contrastive conceptor fit from rollout activations. <i>Offline,</i> success and failure rollouts yield layer-\(\ell\) activations, from which closed-form conceptors \(C^{+}\) and \(C^{-}\) are fit and composed via Boolean subspace algebra into \(C_{\text{steer}} = C^{+} \wedge \neg C^{-}\). <i>At inference,</i> the residual \(h\) at layer \(\ell\) is gated by \(M = (1-\beta)I + \beta\, C_{\text{steer}}\) to produce \(h' = hM^\top\), which flows through the rest of the frozen model. No gradient computation or weight modification is required.</figcaption>
-  </figure>
-
-</section>
-
-<section id="setup">
-  <h2>Experimental Setup</h2>
-  <figure>
-    <img src="figures/envs_figure.jpg" alt="Six panels: MetaWorld ML45, LIBERO-10, and RoboCasa simulation scenes, and three real-robot tasks: Open Drawer, Close Microwave, and Put Duck on Cabinet.">
-    <figcaption><b>Environments.</b> Three simulation benchmarks of increasing difficulty, MetaWorld ML45, LIBERO-10, and a RoboCasa subset, plus real-robot tasks on the DROID platform (7-DoF Franka Panda, Robotiq 2F-85 gripper).</figcaption>
-  </figure>
-  <div class="two">
-    <div>
-      <h3>Policies</h3>
-      <ul class="plain">
-        <li><b>\(\pi_{0.5}\)</b> (flow-matching VLA): MetaWorld, LIBERO, RoboCasa, real robot</li>
-        <li><b>\(\pi_0\)-FAST</b> (autoregressive VLA): MetaWorld, LIBERO, real robot</li>
-        <li><b>GR00T N1.5</b> (flow-matching VLA): RoboCasa, real robot</li>
-        <li><b>Diffusion Policy</b> (non-VLA diffusion baseline): RoboCasa</li>
-      </ul>
-    </div>
-    <div>
-      <h3>Protocol</h3>
-      <ul class="plain">
-        <li><b>Strict train/test split:</b> 15 fitting rollouts to build conceptors and choose hyperparameters, 30 held-out test rollouts with unseen environment configurations.</li>
-        <li><b>Baselines:</b> Contrastive Activation Addition (CAA), Sparse Autoencoder (SAE) steering, and LoRA supervised fine-tuning (SFT) on 30 on-policy rollouts per task, twice COAST&rsquo;s fitting budget.</li>
-        <li><b>Real robot:</b> the released \(\pi_{0.5}\)-DROID checkpoint, not fine-tuned on any demonstrations of the evaluated tasks, 15 trials per task and condition.</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<section id="results">
-  <h2>Main Results</h2>
-  <p>Across every model&ndash;benchmark pair, COAST produces statistically significant improvements over the unsteered policy, and the contrastive strategies (global and per-step) consistently outperform additive (CAA) and feature-based (SAE) steering as well as supervised fine-tuning. Gains are largest where the baseline is weakest.</p>
-
-  <div class="tablewrap">
-  <table>
-    <thead>
-      <tr>
-        <th class="l">Benchmark</th><th class="l">Policy</th>
-        <th>Base</th><th>+SFT</th><th>+SAE</th><th>+CAA</th>
-        <th class="coast">COAST Global</th><th class="coast">COAST Per-step</th><th class="coast">COAST Pos-only</th>
-        <th>&Delta; (best)</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr><td>RoboCasa</td><td>\(\pi_{0.5}\)</td><td>0.40</td><td>0.31</td><td>0.49</td><td>0.42</td><td class="coast">0.55</td><td class="coast">0.55</td><td class="coast best">0.56</td><td class="delta">+0.16</td></tr>
-      <tr><td>RoboCasa</td><td>GR00T N1.5</td><td>0.59</td><td>0.50</td><td>0.69</td><td>0.62</td><td class="coast best">0.75</td><td class="coast">0.71</td><td class="coast">0.73</td><td class="delta">+0.16</td></tr>
-      <tr><td>RoboCasa</td><td>Diffusion Policy</td><td>0.32</td><td>&ndash;</td><td>0.42</td><td>0.36</td><td class="coast">0.45</td><td class="coast best">0.46</td><td class="coast">0.39</td><td class="delta">+0.14</td></tr>
-      <tr><td>LIBERO-10</td><td>\(\pi_{0.5}\)</td><td>0.43</td><td>0.40</td><td>0.61</td><td>0.47</td><td class="coast">0.76</td><td class="coast best">0.80</td><td class="coast">0.63</td><td class="delta">+0.37</td></tr>
-      <tr><td>LIBERO-10</td><td>\(\pi_0\)-FAST&nbsp;&dagger;</td><td>0.65</td><td>0.62</td><td>0.76</td><td>0.71</td><td class="coast best">0.84</td><td class="coast best">0.84</td><td class="coast">0.79</td><td class="delta">+0.23</td></tr>
-      <tr><td>MetaWorld ML45</td><td>\(\pi_{0.5}\)</td><td>0.69</td><td>0.53</td><td>0.77</td><td>0.79</td><td class="coast best">0.94</td><td class="coast best">0.94</td><td class="coast">0.81</td><td class="delta">+0.25</td></tr>
-      <tr><td>MetaWorld ML45</td><td>\(\pi_0\)-FAST</td><td>0.71</td><td>0.76</td><td>0.79</td><td>0.71</td><td class="coast best">0.82</td><td class="coast">0.79</td><td class="coast">0.81</td><td class="delta">+0.11</td></tr>
-    </tbody>
-  </table>
-  </div>
-  <p class="tnote">Mean success rate over tasks, each computed on 30 held-out test rollouts per task and condition. Bold marks the best method per row. &Delta; is the gain of the best COAST variant over the unsteered policy; all contrastive COAST gains are significant under a paired \(t\)-test across tasks (\(p<0.05\)). &dagger;&nbsp;One LIBERO task has zero failures under the \(\pi_0\)-FAST checkpoint, so that column&rsquo;s mean and &Delta; are over the 9 contrastive-eligible tasks. Per-task results, \(p\)-values, and multiple-comparison corrections are in the paper.</p>
-
-  <h3>Three patterns hold across all benchmarks and architectures</h3>
-  <ul class="plain">
-    <li><b>Contrastive beats positive-only.</b> Subtracting the failure subspace contributes meaningfully beyond projecting toward success.</li>
-    <li><b>Per-step helps on long-horizon tasks.</b> Per-step steering matches or exceeds global steering on LIBERO and RoboCasa but offers little extra on short-horizon MetaWorld, suggesting the discriminative subspace shifts during denoising mainly when multi-step reasoning is required.</li>
-    <li><b>Gains scale inversely with baseline success.</b> Tasks where the unsteered policy struggles most show the largest absolute improvements, e.g. LIBERO <i>Mugs+Plates</i> 0.07&rarr;0.60 and MetaWorld <i>pick-place-wall</i> 0.20&rarr;1.00 for \(\pi_{0.5}\).</li>
-  </ul>
-  <p>SFT underperforms the base policy in five settings: fine-tuning on a strictly limited budget of 30 rollouts often overfits and degrades pre-trained robustness, and scaling SFT to 200 trajectories and 1,000 steps does not close the gap. CAA applies a strictly additive shift along a single direction, and SAE steering collapses selected features back into a single additive direction; neither performs the subspace-aware scaling that conceptors provide.</p>
-</section>
 
 <section id="extended">
   <h2>Extended Analyses</h2>
