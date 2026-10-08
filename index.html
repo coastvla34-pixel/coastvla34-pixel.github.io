@@ -177,6 +177,31 @@
   table.kv td:first-child { font-weight: 600; width: 190px; color: var(--ink-2); }
   table.kv { min-width: 0; }
 
+  /* Simulation rollouts: per-environment task selector */
+  .env-block { margin: 26px 0 8px; padding-top: 6px; }
+  .env-block .env-h { display: flex; align-items: baseline; gap: 10px; margin: 0 0 4px; font-size: 19px; }
+  .env-block .env-h .cnt { font-size: 13.5px; font-weight: 500; color: var(--muted); }
+  .env-block .task-tabs { margin-top: 10px; }
+  .sim-tab {
+    appearance: none; cursor: pointer; font: inherit; font-weight: 600; font-size: 14.5px;
+    display: inline-flex; flex-direction: column; align-items: flex-start; gap: 2px;
+    padding: 8px 14px; border-radius: 12px; background: var(--surface); color: var(--ink);
+    border: 1px solid var(--line); transition: background .15s, border-color .15s;
+  }
+  .sim-tab:hover { background: #f3f1ec; }
+  .sim-tab .tt-sr { font-size: 12px; font-weight: 500; color: var(--muted); }
+  .sim-tab.is-active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+  .sim-tab.is-active .tt-sr { color: var(--ink-2); }
+  .sim-panel { display: none; }
+  .sim-panel.is-active { display: block; }
+  .simclip { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px; width: 100%; }
+  .simclip video { display: block; width: 100%; height: auto; border-radius: 8px; background: #000; }
+  .simclip .sub { font-size: 13px; color: var(--muted); margin-top: 6px; }
+
+  .simclip + details.appendix, .sim-panels + details.appendix { margin-top: 14px; }
+  .hpsmall { font-size: 12px; color: var(--muted); white-space: nowrap; }
+  tr.summ td { font-weight: 600; background: #f6f4ef; }
+  details.appendix table { min-width: 560px; }
   footer { border-top: 1px solid var(--line); padding-block: 28px 48px; color: var(--muted); font-size: 14px; text-align: center; }
   .katex { font-size: 1.05em; }
   .katex-display { margin: 10px 0 14px; overflow-x: auto; overflow-y: hidden; }
@@ -198,6 +223,7 @@
     </a>
     <a class="btn secondary" href="paper.pdf" title="Full submission PDF with the extended appendix (real-robot protocol, confidence intervals, and additional ablations).">Full PDF (extended appendix)</a>
     <a class="btn secondary" href="#rollouts">Robot videos</a>
+    <a class="btn secondary" href="#sim-rollouts">Simulation videos</a>
     <a class="btn secondary" href="#results">Results</a>
     <a class="btn secondary" href="https://anonymous-hf.com/a/7no77r4xdeyr/" target="_blank" rel="noopener" title="Anonymized dataset: real-robot π0.5-DROID activations (pi05_droid_activation)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
@@ -403,6 +429,358 @@
     </div>
   </details>
 </section>
+
+<section id="sim-rollouts">
+  <h2>Simulation Rollouts: Task Gallery</h2>
+  <p class="lead">Sample rollouts of the frozen base policies on the three simulation benchmarks. Pick a task within each environment. LIBERO and RoboCasa clips show one successful base-policy episode from the 15-episode evaluation; MetaWorld clips tile all parallel environments of one evaluation episode. The success counts on the buttons are the unsteered base-policy rates these clips were drawn from.</p>
+  <div class="env-block" data-env="metaworld">
+    <h3 class="env-h">MetaWorld ML45 <span class="cnt">13 clips: 3 tasks for &pi;<sub>0.5</sub>, 10 tasks for &pi;<sub>0</sub>-FAST</span></h3>
+    <div class="task-tabs" role="tablist" aria-label="MetaWorld ML45 task">
+    <button class="sim-tab is-active" role="tab" aria-selected="true" aria-controls="sim-metaworld_pi05_hand-insert-v3" data-key="metaworld_pi05_hand-insert-v3">Hand Insert <span class="tt-sr">&pi;<sub>0.5</sub></span> <span class="tt-sr">all envs succeeded</span></button>
+    <button class="sim-tab" role="tab" aria-selected="false" aria-controls="sim-metaworld_pi05_pick-place-v3" data-key="metaworld_pi05_pick-place-v3">Pick Place <span class="tt-sr">&pi;<sub>0.5</sub></span> <span class="tt-sr">SR 0.75</span></button>
+    <button class="sim-tab" role="tab" aria-selected="false" aria-controls="sim-metaworld_pi05_reach-v3" data-key="metaworld_pi05_reach-v3">Reach <span class="tt-sr">&pi;<sub>0.5</sub></span></button>
+    <button class="sim-tab" role="tab" aria-selected="false" aria-controls="sim-metaworld_pi0fast_assembly-v3" data-key="metaworld_pi0fast_assembly-v3">Assembly <span class="tt-sr">&pi;<sub>0</sub>-FAST</span> <span class="tt-sr">SR 0.00</span></button>
+    <button class="sim-tab" role="tab" aria-selected="false" aria-controls="sim-metaworld_pi0fast_disassemble-v3" data-key="metaworld_pi0fast_disassemble-v3">Disassemble <span class="tt-sr">&pi;<sub>0</sub>-FAST</span> <span class="tt-sr">SR 0.60</span></button>
+    <button class="sim-tab" role="tab" aria-selected="false" aria-controls="sim-metaworld_pi0fast_hammer-v3" data-key="metaworld_pi0fast_hammer-v3">Hammer <span class="tt-sr">&pi;<sub>0</sub>-FAST</span> <span class="tt-sr">SR 0.60</span></button>
+    <button class="sim-tab" role="tab" aria-selected="false" aria-controls="sim-metaworld_pi0fast_handle-pull-side-v3" data-key="metaworld_pi0fast_handle-pull-side-v3">Handle Pull Side <span class="tt-sr">&pi;<sub>0</sub>-FAST</span> <span class="tt-sr">SR 0.13</span></button>
+    <button class="sim-tab" role="tab" aria-selected="false" aria-controls="sim-metaworld_pi0fast_lever-pull-v3" data-key="metaworld_pi0fast_lever-pull-v3">Lever Pull <span class="tt-sr">&pi;<sub>0</sub>-FAST</span> <span class="tt-sr">SR 0.27</span></button>
+    <button class="sim-tab" role="tab" aria-selected="false" aria-controls="sim-metaworld_pi0fast_peg-insert-side-v3" data-key="metaworld_pi0fast_peg-insert-side-v3">Peg Insert Side <span class="tt-sr">&pi;<sub>0</sub>-FAST</span> <span class="tt-sr">SR 0.27</span></button>
+    <button class="sim-tab" role="tab" aria-selected="false" aria-controls="sim-metaworld_pi0fast_pick-place-wall-v3" data-key="metaworld_pi0fast_pick-place-wall-v3">Pick Place Wall <span class="tt-sr">&pi;<sub>0</sub>-FAST</span> <span class="tt-sr">SR 0.67</span></button>
+    <button class="sim-tab" role="tab" aria-selected="false" aria-controls="sim-metaworld_pi0fast_plate-slide-back-side-v3" data-key="metaworld_pi0fast_plate-slide-back-side-v3">Plate Slide Back Side <span class="tt-sr">&pi;<sub>0</sub>-FAST</span> <span class="tt-sr">SR 1.00</span></button>
+    <button class="sim-tab" role="tab" aria-selected="false" aria-controls="sim-metaworld_pi0fast_plate-slide-back-v3" data-key="metaworld_pi0fast_plate-slide-back-v3">Plate Slide Back <span class="tt-sr">&pi;<sub>0</sub>-FAST</span> <span class="tt-sr">SR 0.73</span></button>
+    <button class="sim-tab" role="tab" aria-selected="false" aria-controls="sim-metaworld_pi0fast_stick-push-v3" data-key="metaworld_pi0fast_stick-push-v3">Stick Push <span class="tt-sr">&pi;<sub>0</sub>-FAST</span> <span class="tt-sr">SR 0.80</span></button>
+    </div>
+    <div class="sim-panels">
+    <div class="sim-panel is-active" id="sim-metaworld_pi05_hand-insert-v3" role="tabpanel">
+      <div class="task-meta"><span class="prompt">&ldquo;insert the gripper into the hole&rdquo;</span><span class="hp">&pi;<sub>0.5</sub> (5k-step checkpoint) &middot; 9 parallel environments tiled &middot; one evaluation episode</span></div>
+      <div class="simclip" style="max-width:672px"><video muted loop playsinline controls preload="none" poster="videos/posters/sim_metaworld_pi05_hand-insert-v3.jpg"><source src="videos/sim/metaworld_pi05_hand-insert-v3.mp4" type="video/mp4"></video><div class="sub">Corner camera for every tiled environment, 2&times; speed.</div></div>
+    </div>
+    <div class="sim-panel" id="sim-metaworld_pi05_pick-place-v3" role="tabpanel">
+      <div class="task-meta"><span class="prompt">&ldquo;pick up the object and place it at the goal&rdquo;</span><span class="hp">&pi;<sub>0.5</sub> (5k-step checkpoint) &middot; 10 parallel environments tiled &middot; one evaluation episode</span></div>
+      <div class="simclip" style="max-width:672px"><video muted loop playsinline controls preload="none" poster="videos/posters/sim_metaworld_pi05_pick-place-v3.jpg"><source src="videos/sim/metaworld_pi05_pick-place-v3.mp4" type="video/mp4"></video><div class="sub">Corner camera for every tiled environment, 2&times; speed.</div></div>
+    </div>
+    <div class="sim-panel" id="sim-metaworld_pi05_reach-v3" role="tabpanel">
+      <div class="task-meta"><span class="prompt">&ldquo;reach the goal position&rdquo;</span><span class="hp">&pi;<sub>0.5</sub> (5k-step checkpoint) &middot; 10 parallel environments tiled &middot; one evaluation episode</span></div>
+      <div class="simclip" style="max-width:672px"><video muted loop playsinline controls preload="none" poster="videos/posters/sim_metaworld_pi05_reach-v3.jpg"><source src="videos/sim/metaworld_pi05_reach-v3.mp4" type="video/mp4"></video><div class="sub">Corner camera for every tiled environment, 2&times; speed.</div></div>
+    </div>
+    <div class="sim-panel" id="sim-metaworld_pi0fast_assembly-v3" role="tabpanel">
+      <div class="task-meta"><span class="prompt">&ldquo;pick up the nut and place it onto the peg&rdquo;</span><span class="hp">&pi;<sub>0</sub>-FAST &middot; 16 parallel environments tiled (4&times;4) &middot; one evaluation episode, task success rate 0.00</span></div>
+      <div class="simclip" style="max-width:448px"><video muted loop playsinline controls preload="none" poster="videos/posters/sim_metaworld_pi0fast_assembly-v3.jpg"><source src="videos/sim/metaworld_pi0fast_assembly-v3.mp4" type="video/mp4"></video><div class="sub">Corner camera for every tiled environment, 2&times; speed.</div></div>
+    </div>
+    <div class="sim-panel" id="sim-metaworld_pi0fast_disassemble-v3" role="tabpanel">
+      <div class="task-meta"><span class="prompt">&ldquo;pick up the nut and remove it from the peg&rdquo;</span><span class="hp">&pi;<sub>0</sub>-FAST &middot; 16 parallel environments tiled (4&times;4) &middot; one evaluation episode, task success rate 0.60</span></div>
+      <div class="simclip" style="max-width:448px"><video muted loop playsinline controls preload="none" poster="videos/posters/sim_metaworld_pi0fast_disassemble-v3.jpg"><source src="videos/sim/metaworld_pi0fast_disassemble-v3.mp4" type="video/mp4"></video><div class="sub">Corner camera for every tiled environment, 2&times; speed.</div></div>
+    </div>
+    <div class="sim-panel" id="sim-metaworld_pi0fast_hammer-v3" role="tabpanel">
+      <div class="task-meta"><span class="prompt">&ldquo;hammer the nail into the board&rdquo;</span><span class="hp">&pi;<sub>0</sub>-FAST &middot; 16 parallel environments tiled (4&times;4) &middot; one evaluation episode, task success rate 0.60</span></div>
+      <div class="simclip" style="max-width:448px"><video muted loop playsinline controls preload="none" poster="videos/posters/sim_metaworld_pi0fast_hammer-v3.jpg"><source src="videos/sim/metaworld_pi0fast_hammer-v3.mp4" type="video/mp4"></video><div class="sub">Corner camera for every tiled environment, 2&times; speed.</div></div>
+    </div>
+    <div class="sim-panel" id="sim-metaworld_pi0fast_handle-pull-side-v3" role="tabpanel">
+      <div class="task-meta"><span class="prompt">&ldquo;pull the handle sideways&rdquo;</span><span class="hp">&pi;<sub>0</sub>-FAST &middot; 16 parallel environments tiled (4&times;4) &middot; one evaluation episode, task success rate 0.13</span></div>
+      <div class="simclip" style="max-width:448px"><video muted loop playsinline controls preload="none" poster="videos/posters/sim_metaworld_pi0fast_handle-pull-side-v3.jpg"><source src="videos/sim/metaworld_pi0fast_handle-pull-side-v3.mp4" type="video/mp4"></video><div class="sub">Corner camera for every tiled environment, 2&times; speed.</div></div>
+    </div>
+    <div class="sim-panel" id="sim-metaworld_pi0fast_lever-pull-v3" role="tabpanel">
+      <div class="task-meta"><span class="prompt">&ldquo;pull the lever down&rdquo;</span><span class="hp">&pi;<sub>0</sub>-FAST &middot; 16 parallel environments tiled (4&times;4) &middot; one evaluation episode, task success rate 0.27</span></div>
+      <div class="simclip" style="max-width:448px"><video muted loop playsinline controls preload="none" poster="videos/posters/sim_metaworld_pi0fast_lever-pull-v3.jpg"><source src="videos/sim/metaworld_pi0fast_lever-pull-v3.mp4" type="video/mp4"></video><div class="sub">Corner camera for every tiled environment, 2&times; speed.</div></div>
+    </div>
+    <div class="sim-panel" id="sim-metaworld_pi0fast_peg-insert-side-v3" role="tabpanel">
+      <div class="task-meta"><span class="prompt">&ldquo;insert the peg into the hole sideways&rdquo;</span><span class="hp">&pi;<sub>0</sub>-FAST &middot; 16 parallel environments tiled (4&times;4) &middot; one evaluation episode, task success rate 0.27</span></div>
+      <div class="simclip" style="max-width:448px"><video muted loop playsinline controls preload="none" poster="videos/posters/sim_metaworld_pi0fast_peg-insert-side-v3.jpg"><source src="videos/sim/metaworld_pi0fast_peg-insert-side-v3.mp4" type="video/mp4"></video><div class="sub">Corner camera for every tiled environment, 2&times; speed.</div></div>
+    </div>
+    <div class="sim-panel" id="sim-metaworld_pi0fast_pick-place-wall-v3" role="tabpanel">
+      <div class="task-meta"><span class="prompt">&ldquo;pick up the object and place it at the goal behind the wall&rdquo;</span><span class="hp">&pi;<sub>0</sub>-FAST &middot; 16 parallel environments tiled (4&times;4) &middot; one evaluation episode, task success rate 0.67</span></div>
+      <div class="simclip" style="max-width:448px"><video muted loop playsinline controls preload="none" poster="videos/posters/sim_metaworld_pi0fast_pick-place-wall-v3.jpg"><source src="videos/sim/metaworld_pi0fast_pick-place-wall-v3.mp4" type="video/mp4"></video><div class="sub">Corner camera for every tiled environment, 2&times; speed.</div></div>
+    </div>
+    <div class="sim-panel" id="sim-metaworld_pi0fast_plate-slide-back-side-v3" role="tabpanel">
+      <div class="task-meta"><span class="prompt">&ldquo;slide the plate backwards and sideways to the goal&rdquo;</span><span class="hp">&pi;<sub>0</sub>-FAST &middot; 16 parallel environments tiled (4&times;4) &middot; one evaluation episode, task success rate 1.00</span></div>
+      <div class="simclip" style="max-width:448px"><video muted loop playsinline controls preload="none" poster="videos/posters/sim_metaworld_pi0fast_plate-slide-back-side-v3.jpg"><source src="videos/sim/metaworld_pi0fast_plate-slide-back-side-v3.mp4" type="video/mp4"></video><div class="sub">Corner camera for every tiled environment, 2&times; speed.</div></div>
+    </div>
+    <div class="sim-panel" id="sim-metaworld_pi0fast_plate-slide-back-v3" role="tabpanel">
+      <div class="task-meta"><span class="prompt">&ldquo;slide the plate backwards to the goal&rdquo;</span><span class="hp">&pi;<sub>0</sub>-FAST &middot; 16 parallel environments tiled (4&times;4) &middot; one evaluation episode, task success rate 0.73</span></div>
+      <div class="simclip" style="max-width:448px"><video muted loop playsinline controls preload="none" poster="videos/posters/sim_metaworld_pi0fast_plate-slide-back-v3.jpg"><source src="videos/sim/metaworld_pi0fast_plate-slide-back-v3.mp4" type="video/mp4"></video><div class="sub">Corner camera for every tiled environment, 2&times; speed.</div></div>
+    </div>
+    <div class="sim-panel" id="sim-metaworld_pi0fast_stick-push-v3" role="tabpanel">
+      <div class="task-meta"><span class="prompt">&ldquo;use the stick to push the object&rdquo;</span><span class="hp">&pi;<sub>0</sub>-FAST &middot; 16 parallel environments tiled (4&times;4) &middot; one evaluation episode, task success rate 0.80</span></div>
+      <div class="simclip" style="max-width:448px"><video muted loop playsinline controls preload="none" poster="videos/posters/sim_metaworld_pi0fast_stick-push-v3.jpg"><source src="videos/sim/metaworld_pi0fast_stick-push-v3.mp4" type="video/mp4"></video><div class="sub">Corner camera for every tiled environment, 2&times; speed.</div></div>
+    </div>
+    </div>
+    <details class="appendix">
+      <summary>Per-task steering results on MetaWorld ML45: the full 45-task picture <span class="tag">Appendix F.6, Tables 20, 26, 27</span></summary>
+      <div class="inner">
+      <p>Per-task results behind the MetaWorld ML45 numbers in the main table. Contrastive steering is applied to the 26 (\(\pi_{0.5}\)) and 27 (\(\pi_0\)-FAST) tasks whose base policy produces both successes and failures; the remaining high-baseline tasks are covered by the positive-only check at the bottom, so together the tables span the full 45-task training suite.</p>
+      <h3 style="margin-top:14px;">\(\pi_{0.5}\): all 26 steered tasks (Appendix Table 26)</h3>
+      <p>Best success rate per strategy over \(\alpha \in \{0.1, 0.5, 1.0\}\), \(\beta \in \{0.1, 0.3, 0.5\}\) at layer 11; 30 held-out test rollouts per condition. Bold marks the best steered value in a row when it beats the baseline.</p>
+<div class="tablewrap"><table><thead><tr><th class="l">Task</th><th>Baseline</th><th>Global</th><th>Per-Step</th><th>Pos.-Only</th></tr></thead><tbody>
+<tr><td class="l">assembly</td><td>0.27</td><td class="coast"><b>1.00</b> <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.1)</span></td><td class="coast">0.80 <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.1)</span></td><td class="coast">0.27 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.5)</span></td></tr>
+<tr><td class="l">basketball</td><td>0.40</td><td class="coast">0.47 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast"><b>0.60</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast"><b>0.60</b> <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">coffee-pull</td><td>0.93</td><td class="coast">0.93 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast">0.93 <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.1)</span></td><td class="coast"><b>1.00</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.3)</span></td></tr>
+<tr><td class="l">coffee-push</td><td>0.80</td><td class="coast"><b>1.00</b> <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.1)</span></td><td class="coast"><b>1.00</b> <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.1)</span></td><td class="coast"><b>1.00</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">disassemble</td><td>0.60</td><td class="coast"><b>0.93</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast"><b>0.93</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast">0.87 <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.5)</span></td></tr>
+<tr><td class="l">door-open</td><td>0.93</td><td class="coast"><b>1.00</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast"><b>1.00</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast"><b>1.00</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">faucet-close</td><td>0.80</td><td class="coast"><b>1.00</b> <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.1)</span></td><td class="coast">0.93 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast">0.93 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">hammer</td><td>0.33</td><td class="coast"><b>0.87</b> <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.1)</span></td><td class="coast"><b>0.87</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast">0.40 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">handle-pull-side</td><td>0.20</td><td class="coast">0.47 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast">0.33 <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.1)</span></td><td class="coast"><b>0.53</b> <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">handle-pull</td><td>0.47</td><td class="coast">0.47 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast"><b>0.60</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast">0.53 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">lever-pull</td><td>0.27</td><td class="coast">0.60 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast">0.67 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.3)</span></td><td class="coast"><b>0.73</b> <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.3)</span></td></tr>
+<tr><td class="l">peg-insert-side</td><td>0.33</td><td class="coast">0.47 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.3)</span></td><td class="coast"><b>0.67</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.3)</span></td><td class="coast">0.53 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.3)</span></td></tr>
+<tr><td class="l">pick-out-of-hole</td><td>0.20</td><td class="coast">0.27 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.3)</span></td><td class="coast"><b>0.47</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast"><b>0.47</b> <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">pick-place</td><td>0.87</td><td class="coast"><b>1.00</b> <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.1)</span></td><td class="coast"><b>1.00</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast">0.80 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.3)</span></td></tr>
+<tr><td class="l">pick-place-wall</td><td>0.20</td><td class="coast">0.87 <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.1)</span></td><td class="coast"><b>1.00</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast">0.47 <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.3)</span></td></tr>
+<tr><td class="l">plate-slide-back-side</td><td>0.60</td><td class="coast">0.93 <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.1)</span></td><td class="coast"><b>1.00</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.3)</span></td><td class="coast">0.60 <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">plate-slide-back</td><td>0.60</td><td class="coast"><b>0.93</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast"><b>0.93</b> <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.1)</span></td><td class="coast">0.73 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">push-back</td><td>0.67</td><td class="coast"><b>0.93</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast">0.87 <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.3)</span></td><td class="coast">0.87 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.3)</span></td></tr>
+<tr><td class="l">push</td><td>0.93</td><td class="coast"><b>1.00</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast"><b>1.00</b> <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.1)</span></td><td class="coast">0.93 <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">reach</td><td>0.93</td><td class="coast">0.93 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast">0.93 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast"><b>1.00</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">shelf-place</td><td>0.73</td><td class="coast"><b>0.93</b> <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.1)</span></td><td class="coast"><b>0.93</b> <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.1)</span></td><td class="coast"><b>0.93</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.3)</span></td></tr>
+<tr><td class="l">soccer</td><td>0.27</td><td class="coast"><b>0.40</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.3)</span></td><td class="coast"><b>0.40</b> <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.5)</span></td><td class="coast"><b>0.40</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.5)</span></td></tr>
+<tr><td class="l">stick-pull</td><td>0.73</td><td class="coast"><b>0.87</b> <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.1)</span></td><td class="coast"><b>0.87</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast"><b>0.87</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">stick-push</td><td>0.20</td><td class="coast"><b>0.80</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast">0.73 <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.1)</span></td><td class="coast">0.40 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.3)</span></td></tr>
+<tr><td class="l">sweep-into</td><td>0.73</td><td class="coast">0.87 <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.1)</span></td><td class="coast">0.87 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast"><b>0.93</b> <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">sweep</td><td>0.93</td><td class="coast"><b>1.00</b> <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.1)</span></td><td class="coast"><b>1.00</b> <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.1)</span></td><td class="coast"><b>1.00</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td></tr>
+<tr class="summ"><td class="l">Steered tasks (26)</td><td>0.57</td><td>0.81</td><td>0.82</td><td>0.72</td></tr>
+<tr class="summ"><td class="l">&Delta; vs. Baseline</td><td>&mdash;</td><td>+0.23</td><td>+0.25</td><td>+0.15</td></tr>
+</tbody></table></div>
+      <h3 style="margin-top:14px;">\(\pi_0\)-FAST: all 27 steered tasks (Appendix Table 27)</h3>
+      <p>Best success rate per strategy over an extended sweep at layer 17 (\(\alpha_{\text{global}} \in \{0.1,0.5,1,2,10\}\), \(\alpha_{\text{per-step}} \in \{0.1,0.5,1\}\), \(\alpha_{\text{pos.}} \in \{0.1,0.5,1,2\}\), \(\beta \in \{0.1,0.2,0.3,0.5\}\)); 16 rollouts per condition.</p>
+<div class="tablewrap"><table><thead><tr><th class="l">Task</th><th>Baseline</th><th>Global</th><th>Per-Step</th><th>Pos.-Only</th></tr></thead><tbody>
+<tr><td class="l">basketball</td><td>0.62</td><td class="coast">0.62 <span class="hpsmall">(\(\alpha\)=10, \(\beta\)=0.1)</span></td><td class="coast">0.69 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast"><b>0.75</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.2)</span></td></tr>
+<tr><td class="l">coffee-pull</td><td>0.62</td><td class="coast"><b>0.69</b> <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.3)</span></td><td class="coast">0.62 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.2)</span></td><td class="coast"><b>0.69</b> <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.2)</span></td></tr>
+<tr><td class="l">coffee-push</td><td>0.88</td><td class="coast"><b>0.94</b> <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.3)</span></td><td class="coast"><b>0.94</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.2)</span></td><td class="coast"><b>0.94</b> <span class="hpsmall">(\(\alpha\)=2.0, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">disassemble</td><td>0.56</td><td class="coast">0.69 <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.3)</span></td><td class="coast">0.56 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast"><b>0.75</b> <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.5)</span></td></tr>
+<tr><td class="l">door-close</td><td>0.81</td><td class="coast">0.94 <span class="hpsmall">(\(\alpha\)=2.0, \(\beta\)=0.3)</span></td><td class="coast">0.94 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast"><b>1.00</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.3)</span></td></tr>
+<tr><td class="l">faucet-close</td><td>0.44</td><td class="coast">0.69 <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.1)</span></td><td class="coast">0.69 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.5)</span></td><td class="coast"><b>0.81</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">faucet-open</td><td>0.81</td><td class="coast"><b>0.94</b> <span class="hpsmall">(\(\alpha\)=2.0, \(\beta\)=0.5)</span></td><td class="coast">0.88 <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.2)</span></td><td class="coast">0.88 <span class="hpsmall">(\(\alpha\)=2.0, \(\beta\)=0.3)</span></td></tr>
+<tr><td class="l">hammer</td><td>0.69</td><td class="coast">0.69 <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.2)</span></td><td class="coast">0.62 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.2)</span></td><td class="coast">0.62 <span class="hpsmall">(\(\alpha\)=2.0, \(\beta\)=0.3)</span></td></tr>
+<tr><td class="l">handle-press-side</td><td>0.94</td><td class="coast"><b>1.00</b> <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.1)</span></td><td class="coast"><b>1.00</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.2)</span></td><td class="coast"><b>1.00</b> <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.2)</span></td></tr>
+<tr><td class="l">handle-pull-side</td><td>0.12</td><td class="coast"><b>0.25</b> <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.5)</span></td><td class="coast"><b>0.25</b> <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.2)</span></td><td class="coast">0.19 <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">lever-pull</td><td>0.19</td><td class="coast"><b>0.56</b> <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.5)</span></td><td class="coast">0.44 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.5)</span></td><td class="coast"><b>0.56</b> <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.2)</span></td></tr>
+<tr><td class="l">peg-insert-side</td><td>0.19</td><td class="coast"><b>0.31</b> <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.1)</span></td><td class="coast"><b>0.31</b> <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.3)</span></td><td class="coast">0.19 <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">peg-unplug-side</td><td>0.69</td><td class="coast"><b>1.00</b> <span class="hpsmall">(\(\alpha\)=2.0, \(\beta\)=0.5)</span></td><td class="coast">0.94 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.2)</span></td><td class="coast">0.81 <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.2)</span></td></tr>
+<tr><td class="l">pick-place</td><td>0.69</td><td class="coast"><b>0.88</b> <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.5)</span></td><td class="coast"><b>0.88</b> <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.3)</span></td><td class="coast">0.81 <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">pick-place-wall</td><td>0.69</td><td class="coast"><b>0.81</b> <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.1)</span></td><td class="coast">0.75 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.3)</span></td><td class="coast">0.75 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">plate-slide-back</td><td>0.88</td><td class="coast">0.88 <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.3)</span></td><td class="coast">0.88 <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.3)</span></td><td class="coast"><b>0.94</b> <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">push-back</td><td>0.62</td><td class="coast"><b>0.69</b> <span class="hpsmall">(\(\alpha\)=2.0, \(\beta\)=0.2)</span></td><td class="coast">0.62 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.3)</span></td><td class="coast"><b>0.69</b> <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.3)</span></td></tr>
+<tr><td class="l">push</td><td>0.75</td><td class="coast"><b>0.94</b> <span class="hpsmall">(\(\alpha\)=2.0, \(\beta\)=0.3)</span></td><td class="coast">0.88 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.3)</span></td><td class="coast">0.75 <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.3)</span></td></tr>
+<tr><td class="l">push-wall</td><td>0.06</td><td class="coast">0.19 <span class="hpsmall">(\(\alpha\)=10, \(\beta\)=0.2)</span></td><td class="coast"><b>0.25</b> <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.3)</span></td><td class="coast"><b>0.25</b> <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">reach</td><td>0.81</td><td class="coast">0.81 <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.1)</span></td><td class="coast">0.81 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast">0.81 <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">reach-wall</td><td>0.56</td><td class="coast">0.69 <span class="hpsmall">(\(\alpha\)=2.0, \(\beta\)=0.2)</span></td><td class="coast">0.69 <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.3)</span></td><td class="coast"><b>0.75</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.5)</span></td></tr>
+<tr><td class="l">shelf-place</td><td>0.19</td><td class="coast"><b>0.56</b> <span class="hpsmall">(\(\alpha\)=2.0, \(\beta\)=0.3)</span></td><td class="coast"><b>0.56</b> <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.3)</span></td><td class="coast">0.44 <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">soccer</td><td>0.56</td><td class="coast"><b>0.62</b> <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.1)</span></td><td class="coast">0.56 <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.1)</span></td><td class="coast">0.56 <span class="hpsmall">(\(\alpha\)=2.0, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">stick-pull</td><td>0.25</td><td class="coast"><b>0.44</b> <span class="hpsmall">(\(\alpha\)=2.0, \(\beta\)=0.1)</span></td><td class="coast">0.38 <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.5)</span></td><td class="coast"><b>0.44</b> <span class="hpsmall">(\(\alpha\)=2.0, \(\beta\)=0.3)</span></td></tr>
+<tr><td class="l">stick-push</td><td>0.81</td><td class="coast"><b>0.88</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.2)</span></td><td class="coast"><b>0.88</b> <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.3)</span></td><td class="coast"><b>0.88</b> <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">sweep-into</td><td>0.44</td><td class="coast"><b>0.56</b> <span class="hpsmall">(\(\alpha\)=10, \(\beta\)=0.1)</span></td><td class="coast"><b>0.56</b> <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.1)</span></td><td class="coast">0.50 <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.3)</span></td></tr>
+<tr><td class="l">sweep</td><td>0.44</td><td class="coast">0.50 <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.3)</span></td><td class="coast">0.50 <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.3)</span></td><td class="coast"><b>0.56</b> <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.2)</span></td></tr>
+<tr class="summ"><td class="l">Steered tasks (27)</td><td>0.57</td><td>0.70</td><td>0.67</td><td>0.68</td></tr>
+<tr class="summ"><td class="l">&Delta; vs. Baseline</td><td>&mdash;</td><td>+0.13</td><td>+0.10</td><td>+0.11</td></tr>
+</tbody></table></div>
+      <h3 style="margin-top:14px;">\(\pi_{0.5}\): positive-only steering on the 18 high-baseline tasks (Appendix Table 20)</h3>
+      <p>Tasks whose unsteered baseline is at least 0.67 have too few failures to fit a contrastive conceptor, so only the success conceptor \(C^{+}\) is applied (\(\alpha \in \{0.1, 0.5, 1.0\}\), \(\beta = 0.2\), global vs. per-step; 30 rollouts, 300-step horizon). Steering never regresses below baseline and lifts the two tasks that were not already at ceiling.</p>
+<div class="tablewrap"><table><thead><tr><th class="l">Task</th><th>Baseline</th><th>Best Pos.-Only</th><th>Best configuration</th></tr></thead><tbody>
+<tr><td class="l">button-press-topdown-v3</td><td>1.00</td><td class="coast">1.00</td><td>global, &alpha;=0.1</td></tr>
+<tr><td class="l">button-press-topdown-wall-v3</td><td>1.00</td><td class="coast">1.00</td><td>global, &alpha;=0.1</td></tr>
+<tr><td class="l">button-press-v3</td><td>1.00</td><td class="coast">1.00</td><td>global, &alpha;=0.1</td></tr>
+<tr><td class="l">button-press-wall-v3</td><td>1.00</td><td class="coast">1.00</td><td>global, &alpha;=0.1</td></tr>
+<tr><td class="l">coffee-button-v3</td><td>1.00</td><td class="coast">1.00</td><td>global, &alpha;=0.1</td></tr>
+<tr><td class="l">door-close-v3</td><td>1.00</td><td class="coast">1.00</td><td>global, &alpha;=0.1</td></tr>
+<tr><td class="l">drawer-close-v3</td><td>1.00</td><td class="coast">1.00</td><td>global, &alpha;=0.1</td></tr>
+<tr><td class="l">drawer-open-v3</td><td>1.00</td><td class="coast">1.00</td><td>global, &alpha;=0.1</td></tr>
+<tr><td class="l">faucet-open-v3</td><td>0.93</td><td class="coast"><b>1.00</b></td><td>global, &alpha;=0.1</td></tr>
+<tr><td class="l">handle-press-side-v3</td><td>1.00</td><td class="coast">1.00</td><td>per-step, &alpha;=0.1</td></tr>
+<tr><td class="l">handle-press-v3</td><td>1.00</td><td class="coast">1.00</td><td>global, &alpha;=0.1</td></tr>
+<tr><td class="l">peg-unplug-side-v3</td><td>0.67</td><td class="coast"><b>1.00</b></td><td>per-step, &alpha;=1.0</td></tr>
+<tr><td class="l">plate-slide-side-v3</td><td>1.00</td><td class="coast">1.00</td><td>global, &alpha;=0.1</td></tr>
+<tr><td class="l">plate-slide-v3</td><td>1.00</td><td class="coast">1.00</td><td>global, &alpha;=0.1</td></tr>
+<tr><td class="l">push-wall-v3</td><td>1.00</td><td class="coast">1.00</td><td>per-step, &alpha;=1.0</td></tr>
+<tr><td class="l">reach-wall-v3</td><td>1.00</td><td class="coast">1.00</td><td>global, &alpha;=0.5</td></tr>
+<tr><td class="l">window-close-v3</td><td>1.00</td><td class="coast">1.00</td><td>global, &alpha;=0.1</td></tr>
+<tr><td class="l">window-open-v3</td><td>1.00</td><td class="coast">1.00</td><td>global, &alpha;=0.1</td></tr>
+<tr class="summ"><td class="l">Mean</td><td>0.98</td><td>1.00</td><td>&mdash;</td></tr>
+</tbody></table></div>
+      </div>
+    </details>
+  </div>
+  <div class="env-block" data-env="libero">
+    <h3 class="env-h">LIBERO-10 <span class="cnt">10 tasks, &pi;<sub>0.5</sub></span></h3>
+    <div class="task-tabs" role="tablist" aria-label="LIBERO-10 task">
+    <button class="sim-tab is-active" role="tab" aria-selected="true" aria-controls="sim-libero_00" data-key="libero_00">Soup &amp; sauce in basket <span class="tt-sr">9/15</span></button>
+    <button class="sim-tab" role="tab" aria-selected="false" aria-controls="sim-libero_01" data-key="libero_01">Cream cheese &amp; butter in basket <span class="tt-sr">12/15</span></button>
+    <button class="sim-tab" role="tab" aria-selected="false" aria-controls="sim-libero_02" data-key="libero_02">Stove on, moka pot <span class="tt-sr">8/15</span></button>
+    <button class="sim-tab" role="tab" aria-selected="false" aria-controls="sim-libero_03" data-key="libero_03">Bowl in drawer, close it <span class="tt-sr">7/15</span></button>
+    <button class="sim-tab" role="tab" aria-selected="false" aria-controls="sim-libero_04" data-key="libero_04">Two mugs on two plates <span class="tt-sr">2/15</span></button>
+    <button class="sim-tab" role="tab" aria-selected="false" aria-controls="sim-libero_05" data-key="libero_05">Book into caddy <span class="tt-sr">13/15</span></button>
+    <button class="sim-tab" role="tab" aria-selected="false" aria-controls="sim-libero_06" data-key="libero_06">Mug on plate, pudding beside <span class="tt-sr">7/15</span></button>
+    <button class="sim-tab" role="tab" aria-selected="false" aria-controls="sim-libero_07" data-key="libero_07">Soup &amp; cream cheese in basket <span class="tt-sr">8/15</span></button>
+    <button class="sim-tab" role="tab" aria-selected="false" aria-controls="sim-libero_08" data-key="libero_08">Both moka pots on stove <span class="tt-sr">1/15</span></button>
+    <button class="sim-tab" role="tab" aria-selected="false" aria-controls="sim-libero_09" data-key="libero_09">Mug in microwave, close it <span class="tt-sr">3/15</span></button>
+    </div>
+    <div class="sim-panels">
+    <div class="sim-panel is-active" id="sim-libero_00" role="tabpanel">
+      <div class="task-meta"><span class="prompt">&ldquo;put both the alphabet soup and the tomato sauce in the basket&rdquo;</span><span class="hp">Living Room Scene 2 &middot; &pi;<sub>0.5</sub> base policy 9/15 &middot; this clip: <b>success</b></span></div>
+      <div class="simclip" style="max-width:512px"><video muted loop playsinline controls preload="none" poster="videos/posters/sim_libero_00.jpg"><source src="videos/sim/libero_00.mp4" type="video/mp4"></video><div class="sub">Agentview (left) and wrist camera (right), 2&times; speed.</div></div>
+    </div>
+    <div class="sim-panel" id="sim-libero_01" role="tabpanel">
+      <div class="task-meta"><span class="prompt">&ldquo;put both the cream cheese box and the butter in the basket&rdquo;</span><span class="hp">Living Room Scene 2 &middot; &pi;<sub>0.5</sub> base policy 12/15 &middot; this clip: <b>success</b></span></div>
+      <div class="simclip" style="max-width:512px"><video muted loop playsinline controls preload="none" poster="videos/posters/sim_libero_01.jpg"><source src="videos/sim/libero_01.mp4" type="video/mp4"></video><div class="sub">Agentview (left) and wrist camera (right), 2&times; speed.</div></div>
+    </div>
+    <div class="sim-panel" id="sim-libero_02" role="tabpanel">
+      <div class="task-meta"><span class="prompt">&ldquo;turn on the stove and put the moka pot on it&rdquo;</span><span class="hp">Kitchen Scene 3 &middot; &pi;<sub>0.5</sub> base policy 8/15 &middot; this clip: <b>success</b></span></div>
+      <div class="simclip" style="max-width:512px"><video muted loop playsinline controls preload="none" poster="videos/posters/sim_libero_02.jpg"><source src="videos/sim/libero_02.mp4" type="video/mp4"></video><div class="sub">Agentview (left) and wrist camera (right), 2&times; speed.</div></div>
+    </div>
+    <div class="sim-panel" id="sim-libero_03" role="tabpanel">
+      <div class="task-meta"><span class="prompt">&ldquo;put the black bowl in the bottom drawer of the cabinet and close it&rdquo;</span><span class="hp">Kitchen Scene 4 &middot; &pi;<sub>0.5</sub> base policy 7/15 &middot; this clip: <b>success</b></span></div>
+      <div class="simclip" style="max-width:512px"><video muted loop playsinline controls preload="none" poster="videos/posters/sim_libero_03.jpg"><source src="videos/sim/libero_03.mp4" type="video/mp4"></video><div class="sub">Agentview (left) and wrist camera (right), 2&times; speed.</div></div>
+    </div>
+    <div class="sim-panel" id="sim-libero_04" role="tabpanel">
+      <div class="task-meta"><span class="prompt">&ldquo;put the white mug on the left plate and put the yellow and white mug on the right plate&rdquo;</span><span class="hp">Living Room Scene 5 &middot; &pi;<sub>0.5</sub> base policy 2/15 &middot; this clip: <b>success</b></span></div>
+      <div class="simclip" style="max-width:512px"><video muted loop playsinline controls preload="none" poster="videos/posters/sim_libero_04.jpg"><source src="videos/sim/libero_04.mp4" type="video/mp4"></video><div class="sub">Agentview (left) and wrist camera (right), 2&times; speed.</div></div>
+    </div>
+    <div class="sim-panel" id="sim-libero_05" role="tabpanel">
+      <div class="task-meta"><span class="prompt">&ldquo;pick up the book and place it in the back compartment of the caddy&rdquo;</span><span class="hp">Study Scene 1 &middot; &pi;<sub>0.5</sub> base policy 13/15 &middot; this clip: <b>success</b></span></div>
+      <div class="simclip" style="max-width:512px"><video muted loop playsinline controls preload="none" poster="videos/posters/sim_libero_05.jpg"><source src="videos/sim/libero_05.mp4" type="video/mp4"></video><div class="sub">Agentview (left) and wrist camera (right), 2&times; speed.</div></div>
+    </div>
+    <div class="sim-panel" id="sim-libero_06" role="tabpanel">
+      <div class="task-meta"><span class="prompt">&ldquo;put the white mug on the plate and put the chocolate pudding to the right of the plate&rdquo;</span><span class="hp">Living Room Scene 6 &middot; &pi;<sub>0.5</sub> base policy 7/15 &middot; this clip: <b>success</b></span></div>
+      <div class="simclip" style="max-width:512px"><video muted loop playsinline controls preload="none" poster="videos/posters/sim_libero_06.jpg"><source src="videos/sim/libero_06.mp4" type="video/mp4"></video><div class="sub">Agentview (left) and wrist camera (right), 2&times; speed.</div></div>
+    </div>
+    <div class="sim-panel" id="sim-libero_07" role="tabpanel">
+      <div class="task-meta"><span class="prompt">&ldquo;put both the alphabet soup and the cream cheese box in the basket&rdquo;</span><span class="hp">Living Room Scene 1 &middot; &pi;<sub>0.5</sub> base policy 8/15 &middot; this clip: <b>success</b></span></div>
+      <div class="simclip" style="max-width:512px"><video muted loop playsinline controls preload="none" poster="videos/posters/sim_libero_07.jpg"><source src="videos/sim/libero_07.mp4" type="video/mp4"></video><div class="sub">Agentview (left) and wrist camera (right), 2&times; speed.</div></div>
+    </div>
+    <div class="sim-panel" id="sim-libero_08" role="tabpanel">
+      <div class="task-meta"><span class="prompt">&ldquo;put both moka pots on the stove&rdquo;</span><span class="hp">Kitchen Scene 8 &middot; &pi;<sub>0.5</sub> base policy 1/15 &middot; this clip: <b>success</b></span></div>
+      <div class="simclip" style="max-width:512px"><video muted loop playsinline controls preload="none" poster="videos/posters/sim_libero_08.jpg"><source src="videos/sim/libero_08.mp4" type="video/mp4"></video><div class="sub">Agentview (left) and wrist camera (right), 2&times; speed.</div></div>
+    </div>
+    <div class="sim-panel" id="sim-libero_09" role="tabpanel">
+      <div class="task-meta"><span class="prompt">&ldquo;put the yellow and white mug in the microwave and close it&rdquo;</span><span class="hp">Kitchen Scene 6 &middot; &pi;<sub>0.5</sub> base policy 3/15 &middot; this clip: <b>success</b></span></div>
+      <div class="simclip" style="max-width:512px"><video muted loop playsinline controls preload="none" poster="videos/posters/sim_libero_09.jpg"><source src="videos/sim/libero_09.mp4" type="video/mp4"></video><div class="sub">Agentview (left) and wrist camera (right), 2&times; speed.</div></div>
+    </div>
+    </div>
+    <details class="appendix">
+      <summary>Per-task steering results on LIBERO-10 <span class="tag">Appendix Tables 23, 24</span></summary>
+      <div class="inner">
+      <p>Per-task results behind the LIBERO-10 rows of the main table, for both models. Each cell is the best success rate for that strategy with its selected layer, aperture \(\alpha\), and strength \(\beta\); 30 held-out test rollouts per condition.</p>
+      <h3 style="margin-top:14px;">\(\pi_{0.5}\) with layer sweep \(\ell \in \{5, 11\}\) (Appendix Table 23)</h3>
+<div class="tablewrap"><table><thead><tr><th class="l">Task</th><th>Global</th><th>Per-Step</th><th>Pos.-Only</th></tr></thead><tbody>
+<tr><td class="l">KS3: turn on the stove and put the moka pot on it</td><td class="coast"><b>0.93</b> <span class="hpsmall">(L5, \(\alpha\)=0.5, \(\beta\)=0.1)</span></td><td class="coast">0.87 <span class="hpsmall">(L5, \(\alpha\)=10.0, \(\beta\)=0.3)</span></td><td class="coast">0.80 <span class="hpsmall">(L11, \(\alpha\)=1.0, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">KS4: put the black bowl in the bottom drawer of the cabinet and close it</td><td class="coast">0.73 <span class="hpsmall">(L5, \(\alpha\)=1.0, \(\beta\)=0.1)</span></td><td class="coast">0.80 <span class="hpsmall">(L5, \(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast"><b>0.87</b> <span class="hpsmall">(L5, \(\alpha\)=1.0, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">KS6: put the yellow and white mug in the microwave and close it</td><td class="coast">0.40 <span class="hpsmall">(L11, \(\alpha\)=0.1, \(\beta\)=0.3)</span></td><td class="coast"><b>0.60</b> <span class="hpsmall">(L11, \(\alpha\)=0.5, \(\beta\)=0.3)</span></td><td class="coast">0.33 <span class="hpsmall">(L5, \(\alpha\)=1.0, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">KS8: put both moka pots on the stove</td><td class="coast">0.47 <span class="hpsmall">(L5, \(\alpha\)=1.0, \(\beta\)=0.1)</span></td><td class="coast"><b>0.53</b> <span class="hpsmall">(L11, \(\alpha\)=2.0, \(\beta\)=0.3)</span></td><td class="coast">0.13 <span class="hpsmall">(L5, \(\alpha\)=1.0, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">LR1: put both the alphabet soup and the cream cheese box in the basket</td><td class="coast">0.93 <span class="hpsmall">(L11, \(\alpha\)=0.5, \(\beta\)=0.3)</span></td><td class="coast"><b>1.00</b> <span class="hpsmall">(L11, \(\alpha\)=2.0, \(\beta\)=0.1)</span></td><td class="coast">0.93 <span class="hpsmall">(L5, \(\alpha\)=1.0, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">LR2: put both the alphabet soup and the tomato sauce in the basket</td><td class="coast"><b>0.80</b> <span class="hpsmall">(L11, \(\alpha\)=0.5, \(\beta\)=0.3)</span></td><td class="coast"><b>0.80</b> <span class="hpsmall">(L5, \(\alpha\)=2.0, \(\beta\)=0.1)</span></td><td class="coast">0.60 <span class="hpsmall">(L5, \(\alpha\)=1.0, \(\beta\)=0.3)</span></td></tr>
+<tr><td class="l">LR2: put both the cream cheese box and the butter in the basket</td><td class="coast"><b>0.93</b> <span class="hpsmall">(L5, \(\alpha\)=0.5, \(\beta\)=0.1)</span></td><td class="coast"><b>0.93</b> <span class="hpsmall">(L5, \(\alpha\)=0.1, \(\beta\)=0.3)</span></td><td class="coast">0.87 <span class="hpsmall">(L5, \(\alpha\)=0.5, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">LR5: put the white mug on the left plate and put the yellow and white mug on the right plate</td><td class="coast"><b>0.60</b> <span class="hpsmall">(L11, \(\alpha\)=0.5, \(\beta\)=0.5)</span></td><td class="coast"><b>0.60</b> <span class="hpsmall">(L11, \(\alpha\)=2.0, \(\beta\)=0.5)</span></td><td class="coast">0.20 <span class="hpsmall">(L11, \(\alpha\)=0.5, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">LR6: put the white mug on the plate and put the chocolate pudding to the right of the plate</td><td class="coast"><b>0.87</b> <span class="hpsmall">(L5, \(\alpha\)=0.5, \(\beta\)=0.1)</span></td><td class="coast"><b>0.87</b> <span class="hpsmall">(L5, \(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast">0.67 <span class="hpsmall">(L5, \(\alpha\)=0.5, \(\beta\)=0.3)</span></td></tr>
+<tr><td class="l">ST1: pick up the book and place it in the back compartment of the caddy</td><td class="coast">0.93 <span class="hpsmall">(L5, \(\alpha\)=0.5, \(\beta\)=0.1)</span></td><td class="coast"><b>1.00</b> <span class="hpsmall">(L5, \(\alpha\)=0.5, \(\beta\)=0.1)</span></td><td class="coast">0.93 <span class="hpsmall">(L5, \(\alpha\)=0.5, \(\beta\)=0.1)</span></td></tr>
+<tr class="summ"><td class="l">Mean</td><td>0.76</td><td>0.80</td><td>0.63</td></tr>
+</tbody></table></div>
+      <h3 style="margin-top:14px;">\(\pi_0\)-FAST (Appendix Table 24)</h3>
+      <p>LR2 (cream cheese &amp; butter) has no failures under this checkpoint, so the contrastive strategies cannot be constructed for it; the means are over the 9 contrastive-eligible tasks.</p>
+<div class="tablewrap"><table><thead><tr><th class="l">Task</th><th>Global</th><th>Per-Step</th><th>Pos.-Only</th></tr></thead><tbody>
+<tr><td class="l">KS3: turn on the stove and put the moka pot on it</td><td class="coast"><b>1.00</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.02)</span></td><td class="coast">0.87 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.3)</span></td><td class="coast">0.80 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.05)</span></td></tr>
+<tr><td class="l">KS4: put the black bowl in the bottom drawer of the cabinet and close it</td><td class="coast"><b>0.93</b> <span class="hpsmall">(\(\alpha\)=2.0, \(\beta\)=0.1)</span></td><td class="coast"><b>0.93</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.2)</span></td><td class="coast">0.80 <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">KS6: put the yellow and white mug in the microwave and close it</td><td class="coast">0.73 <span class="hpsmall">(\(\alpha\)=10.0, \(\beta\)=0.3)</span></td><td class="coast"><b>0.80</b> <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.1)</span></td><td class="coast">0.73 <span class="hpsmall">(\(\alpha\)=2.0, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">KS8: put both moka pots on the stove</td><td class="coast"><b>0.53</b> <span class="hpsmall">(\(\alpha\)=5.0, \(\beta\)=0.15)</span></td><td class="coast"><b>0.53</b> <span class="hpsmall">(\(\alpha\)=3.0, \(\beta\)=0.2)</span></td><td class="coast">0.40 <span class="hpsmall">(\(\alpha\)=3.0, \(\beta\)=0.01)</span></td></tr>
+<tr><td class="l">LR1: put both the alphabet soup and the cream cheese box in the basket</td><td class="coast">0.87 <span class="hpsmall">(\(\alpha\)=10.0, \(\beta\)=0.2)</span></td><td class="coast">0.87 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.2)</span></td><td class="coast"><b>1.00</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">LR2: put both the alphabet soup and the tomato sauce in the basket</td><td class="coast">0.87 <span class="hpsmall">(\(\alpha\)=2.0, \(\beta\)=0.2)</span></td><td class="coast"><b>0.93</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.2)</span></td><td class="coast">0.73 <span class="hpsmall">(\(\alpha\)=0.2, \(\beta\)=0.05)</span></td></tr>
+<tr><td class="l">LR2: put both the cream cheese box and the butter in the basket</td><td class="coast">&ndash; <span class="hpsmall">(no Cfail )</span></td><td class="coast">&ndash; <span class="hpsmall">(no Cfail )</span></td><td class="coast"><b>1.00</b> <span class="hpsmall">(\(\alpha\)=0.5, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">LR5: put the white mug on the left plate and put the yellow and white mug on the right plate</td><td class="coast"><b>0.87</b> <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.2)</span></td><td class="coast"><b>0.87</b> <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.3)</span></td><td class="coast">0.80 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.05)</span></td></tr>
+<tr><td class="l">LR6: put the white mug on the plate and put the chocolate pudding to the right of the plate</td><td class="coast"><b>0.93</b> <span class="hpsmall">(\(\alpha\)=1.0, \(\beta\)=0.1)</span></td><td class="coast"><b>0.93</b> <span class="hpsmall">(\(\alpha\)=0.3, \(\beta\)=0.05)</span></td><td class="coast">0.87 <span class="hpsmall">(\(\alpha\)=0.1, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">ST1: pick up the book and place it in the back compartment of the caddy</td><td class="coast"><b>0.87</b> <span class="hpsmall">(\(\alpha\)=10.0, \(\beta\)=0.3)</span></td><td class="coast"><b>0.87</b> <span class="hpsmall">(\(\alpha\)=0.07, \(\beta\)=0.1)</span></td><td class="coast">0.73 <span class="hpsmall">(\(\alpha\)=0.07, \(\beta\)=0.12)</span></td></tr>
+<tr class="summ"><td class="l">Mean</td><td>0.84</td><td>0.84</td><td>0.79</td></tr>
+</tbody></table></div>
+      </div>
+    </details>
+  </div>
+  <div class="env-block" data-env="robocasa">
+    <h3 class="env-h">RoboCasa <span class="cnt">7 tasks, &pi;<sub>0.5</sub></span></h3>
+    <div class="task-tabs" role="tablist" aria-label="RoboCasa task">
+    <button class="sim-tab is-active" role="tab" aria-selected="true" aria-controls="sim-robocasa_CloseFridge" data-key="robocasa_CloseFridge">Close Fridge <span class="tt-sr">2/15</span></button>
+    <button class="sim-tab" role="tab" aria-selected="false" aria-controls="sim-robocasa_CoffeeSetupMug" data-key="robocasa_CoffeeSetupMug">Coffee Setup Mug <span class="tt-sr">4/15</span></button>
+    <button class="sim-tab" role="tab" aria-selected="false" aria-controls="sim-robocasa_OpenDrawer" data-key="robocasa_OpenDrawer">Open Drawer <span class="tt-sr">9/15</span></button>
+    <button class="sim-tab" role="tab" aria-selected="false" aria-controls="sim-robocasa_OpenStandMixerHead" data-key="robocasa_OpenStandMixerHead">Open Stand Mixer Head <span class="tt-sr">10/15</span></button>
+    <button class="sim-tab" role="tab" aria-selected="false" aria-controls="sim-robocasa_PickPlaceCounterToCabinet" data-key="robocasa_PickPlaceCounterToCabinet">Pick Place Counter To Cabinet <span class="tt-sr">7/15</span></button>
+    <button class="sim-tab" role="tab" aria-selected="false" aria-controls="sim-robocasa_PickPlaceCounterToStove" data-key="robocasa_PickPlaceCounterToStove">Pick Place Counter To Stove <span class="tt-sr">7/15</span></button>
+    <button class="sim-tab" role="tab" aria-selected="false" aria-controls="sim-robocasa_TurnOnElectricKettle" data-key="robocasa_TurnOnElectricKettle">Turn On Electric Kettle <span class="tt-sr">2/15</span></button>
+    </div>
+    <div class="sim-panels">
+    <div class="sim-panel is-active" id="sim-robocasa_CloseFridge" role="tabpanel">
+      <div class="task-meta"><span class="prompt">&ldquo;Close Fridge&rdquo;</span><span class="hp">&pi;<sub>0.5</sub> (75k-step checkpoint) base policy 2/15 &middot; this clip: <b>success</b></span></div>
+      <div class="simclip" style="max-width:768px"><video muted loop playsinline controls preload="none" poster="videos/posters/sim_robocasa_CloseFridge.jpg"><source src="videos/sim/robocasa_CloseFridge.mp4" type="video/mp4"></video><div class="sub">Left and right agentview cameras and wrist camera, 3&times; speed.</div></div>
+    </div>
+    <div class="sim-panel" id="sim-robocasa_CoffeeSetupMug" role="tabpanel">
+      <div class="task-meta"><span class="prompt">&ldquo;Coffee Setup Mug&rdquo;</span><span class="hp">&pi;<sub>0.5</sub> (75k-step checkpoint) base policy 4/15 &middot; this clip: <b>success</b></span></div>
+      <div class="simclip" style="max-width:768px"><video muted loop playsinline controls preload="none" poster="videos/posters/sim_robocasa_CoffeeSetupMug.jpg"><source src="videos/sim/robocasa_CoffeeSetupMug.mp4" type="video/mp4"></video><div class="sub">Left and right agentview cameras and wrist camera, 3&times; speed.</div></div>
+    </div>
+    <div class="sim-panel" id="sim-robocasa_OpenDrawer" role="tabpanel">
+      <div class="task-meta"><span class="prompt">&ldquo;Open Drawer&rdquo;</span><span class="hp">&pi;<sub>0.5</sub> (75k-step checkpoint) base policy 9/15 &middot; this clip: <b>success</b></span></div>
+      <div class="simclip" style="max-width:768px"><video muted loop playsinline controls preload="none" poster="videos/posters/sim_robocasa_OpenDrawer.jpg"><source src="videos/sim/robocasa_OpenDrawer.mp4" type="video/mp4"></video><div class="sub">Left and right agentview cameras and wrist camera, 3&times; speed.</div></div>
+    </div>
+    <div class="sim-panel" id="sim-robocasa_OpenStandMixerHead" role="tabpanel">
+      <div class="task-meta"><span class="prompt">&ldquo;Open Stand Mixer Head&rdquo;</span><span class="hp">&pi;<sub>0.5</sub> (75k-step checkpoint) base policy 10/15 &middot; this clip: <b>success</b></span></div>
+      <div class="simclip" style="max-width:768px"><video muted loop playsinline controls preload="none" poster="videos/posters/sim_robocasa_OpenStandMixerHead.jpg"><source src="videos/sim/robocasa_OpenStandMixerHead.mp4" type="video/mp4"></video><div class="sub">Left and right agentview cameras and wrist camera, 3&times; speed.</div></div>
+    </div>
+    <div class="sim-panel" id="sim-robocasa_PickPlaceCounterToCabinet" role="tabpanel">
+      <div class="task-meta"><span class="prompt">&ldquo;Pick Place Counter To Cabinet&rdquo;</span><span class="hp">&pi;<sub>0.5</sub> (75k-step checkpoint) base policy 7/15 &middot; this clip: <b>success</b></span></div>
+      <div class="simclip" style="max-width:768px"><video muted loop playsinline controls preload="none" poster="videos/posters/sim_robocasa_PickPlaceCounterToCabinet.jpg"><source src="videos/sim/robocasa_PickPlaceCounterToCabinet.mp4" type="video/mp4"></video><div class="sub">Left and right agentview cameras and wrist camera, 3&times; speed.</div></div>
+    </div>
+    <div class="sim-panel" id="sim-robocasa_PickPlaceCounterToStove" role="tabpanel">
+      <div class="task-meta"><span class="prompt">&ldquo;Pick Place Counter To Stove&rdquo;</span><span class="hp">&pi;<sub>0.5</sub> (75k-step checkpoint) base policy 7/15 &middot; this clip: <b>success</b></span></div>
+      <div class="simclip" style="max-width:768px"><video muted loop playsinline controls preload="none" poster="videos/posters/sim_robocasa_PickPlaceCounterToStove.jpg"><source src="videos/sim/robocasa_PickPlaceCounterToStove.mp4" type="video/mp4"></video><div class="sub">Left and right agentview cameras and wrist camera, 3&times; speed.</div></div>
+    </div>
+    <div class="sim-panel" id="sim-robocasa_TurnOnElectricKettle" role="tabpanel">
+      <div class="task-meta"><span class="prompt">&ldquo;Turn On Electric Kettle&rdquo;</span><span class="hp">&pi;<sub>0.5</sub> (75k-step checkpoint) base policy 2/15 &middot; this clip: <b>success</b></span></div>
+      <div class="simclip" style="max-width:768px"><video muted loop playsinline controls preload="none" poster="videos/posters/sim_robocasa_TurnOnElectricKettle.jpg"><source src="videos/sim/robocasa_TurnOnElectricKettle.mp4" type="video/mp4"></video><div class="sub">Left and right agentview cameras and wrist camera, 3&times; speed.</div></div>
+    </div>
+    </div>
+    <details class="appendix">
+      <summary>Per-task steering results on RoboCasa <span class="tag">Appendix Tables 25, 28</span></summary>
+      <div class="inner">
+      <p>Per-task results behind the RoboCasa rows of the main table. Each cell is the best success rate for that strategy with its selected layer, aperture \(\alpha\), and strength \(\beta\); 30 held-out test rollouts per condition. For the per-step strategy, \(t\) is the denoising step whose conceptor was selected.</p>
+      <h3 style="margin-top:14px;">\(\pi_{0.5}\) with layer sweep \(\ell \in \{5, 11\}\) (Appendix Table 25)</h3>
+<div class="tablewrap"><table><thead><tr><th class="l">Task</th><th>Global</th><th>Per-Step</th><th>Pos.-Only</th></tr></thead><tbody>
+<tr><td class="l">Close Fridge</td><td class="coast"><b>0.47</b> <span class="hpsmall">(L11, \(\alpha\)=0.5, \(\beta\)=0.3)</span></td><td class="coast">0.40 <span class="hpsmall">(t=0, L11, \(\alpha\)=0.1, \(\beta\)=0.5)</span></td><td class="coast">0.40 <span class="hpsmall">(L5, \(\alpha\)=2.0, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">Coffee Setup Mug</td><td class="coast">0.33 <span class="hpsmall">(L11, \(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast">0.33 <span class="hpsmall">(t=0, L5, \(\alpha\)=0.5, \(\beta\)=0.1)</span></td><td class="coast"><b>0.53</b> <span class="hpsmall">(L5, \(\alpha\)=0.5, \(\beta\)=0.5)</span></td></tr>
+<tr><td class="l">Open Drawer</td><td class="coast"><b>0.67</b> <span class="hpsmall">(L11, \(\alpha\)=0.5, \(\beta\)=0.1)</span></td><td class="coast">0.53 <span class="hpsmall">(t=0, L5, \(\alpha\)=0.5, \(\beta\)=0.1)</span></td><td class="coast"><b>0.67</b> <span class="hpsmall">(L5, \(\alpha\)=1.0, \(\beta\)=0.3)</span></td></tr>
+<tr><td class="l">Open Stand Mixer Head</td><td class="coast">0.73 <span class="hpsmall">(L11, \(\alpha\)=0.5, \(\beta\)=0.1)</span></td><td class="coast"><b>0.80</b> <span class="hpsmall">(t=9, L11, \(\alpha\)=1.0, \(\beta\)=0.1)</span></td><td class="coast">0.53 <span class="hpsmall">(L5, \(\alpha\)=0.1, \(\beta\)=0.3)</span></td></tr>
+<tr><td class="l">Pick Place Counter To Cabinet</td><td class="coast"><b>0.73</b> <span class="hpsmall">(L5, \(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast"><b>0.73</b> <span class="hpsmall">(t=0, L5, \(\alpha\)=0.5, \(\beta\)=0.1)</span></td><td class="coast">0.67 <span class="hpsmall">(L5, \(\alpha\)=10.0, \(\beta\)=0.3)</span></td></tr>
+<tr><td class="l">Pick Place Counter To Stove</td><td class="coast">0.53 <span class="hpsmall">(L11, \(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast"><b>0.67</b> <span class="hpsmall">(t=0, L11, \(\alpha\)=1.0, \(\beta\)=0.1)</span></td><td class="coast">0.60 <span class="hpsmall">(L5, \(\alpha\)=0.5, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">Turn On Electric Kettle</td><td class="coast">0.40 <span class="hpsmall">(L11, \(\alpha\)=0.5, \(\beta\)=0.1)</span></td><td class="coast">0.40 <span class="hpsmall">(t=0, L11, \(\alpha\)=2.0, \(\beta\)=0.1)</span></td><td class="coast"><b>0.53</b> <span class="hpsmall">(L5, \(\alpha\)=0.5, \(\beta\)=0.3)</span></td></tr>
+<tr class="summ"><td class="l">Mean</td><td>0.55</td><td>0.55</td><td>0.56</td></tr>
+</tbody></table></div>
+      <h3 style="margin-top:14px;">GR00T N1.5 (Appendix Table 28)</h3>
+<div class="tablewrap"><table><thead><tr><th class="l">Task</th><th>Global</th><th>Per-Step</th><th>Pos.-Only</th></tr></thead><tbody>
+<tr><td class="l">Close Fridge</td><td class="coast">0.93 <span class="hpsmall">(L10, \(\alpha\)=1.0, \(\beta\)=0.1)</span></td><td class="coast"><b>1.00</b> <span class="hpsmall">(L10, \(\beta\)=0.2)</span></td><td class="coast">0.87 <span class="hpsmall">(L10, \(\alpha\)=0.1, \(\beta\)=0.1)</span></td></tr>
+<tr><td class="l">Coffee Setup Mug</td><td class="coast">0.27 <span class="hpsmall">(L10, \(\alpha\)=0.5, \(\beta\)=0.1)</span></td><td class="coast"><b>0.33</b> <span class="hpsmall">(L10, \(\beta\)=0.2)</span></td><td class="coast"><b>0.33</b> <span class="hpsmall">(L10, \(\alpha\)=1.0, \(\beta\)=0.3)</span></td></tr>
+<tr><td class="l">Open Drawer</td><td class="coast"><b>0.80</b> <span class="hpsmall">(L10, \(\alpha\)=0.5, \(\beta\)=0.1)</span></td><td class="coast">0.53 <span class="hpsmall">(L10, \(\beta\)=0.1)</span></td><td class="coast">0.67 <span class="hpsmall">(L10, \(\alpha\)=0.1, \(\beta\)=0.3)</span></td></tr>
+<tr><td class="l">Open Stand Mixer Head</td><td class="coast">0.80 <span class="hpsmall">(L10, \(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast">0.80 <span class="hpsmall">(L10, \(\beta\)=0.1)</span></td><td class="coast"><b>0.93</b> <span class="hpsmall">(L10, \(\alpha\)=0.1, \(\beta\)=0.3)</span></td></tr>
+<tr><td class="l">Pick Place Counter To Cabinet</td><td class="coast"><b>0.80</b> <span class="hpsmall">(L10, \(\alpha\)=0.3, \(\beta\)=0.5)</span></td><td class="coast"><b>0.80</b> <span class="hpsmall">(L10, \(\beta\)=0.5)</span></td><td class="coast">0.73 <span class="hpsmall">(L10, \(\alpha\)=0.1, \(\beta\)=0.3)</span></td></tr>
+<tr><td class="l">Pick Place Counter To Stove</td><td class="coast"><b>0.87</b> <span class="hpsmall">(L10, \(\alpha\)=0.1, \(\beta\)=0.1)</span></td><td class="coast">0.75 <span class="hpsmall">(L10, \(\beta\)=0.1)</span></td><td class="coast"><b>0.87</b> <span class="hpsmall">(L10, \(\alpha\)=1.0, \(\beta\)=0.3)</span></td></tr>
+<tr><td class="l">Turn On Electric Kettle</td><td class="coast"><b>0.80</b> <span class="hpsmall">(L10, \(\alpha\)=0.8, \(\beta\)=0.08)</span></td><td class="coast">0.73 <span class="hpsmall">(L10, \(\beta\)=0.08)</span></td><td class="coast">0.73 <span class="hpsmall">(L10, \(\alpha\)=0.8, \(\beta\)=0.05)</span></td></tr>
+<tr class="summ"><td class="l">Mean</td><td>0.75</td><td>0.71</td><td>0.73</td></tr>
+</tbody></table></div>
+      </div>
+    </details>
+  </div>
+</section>
+
+<script>
+(function () {
+  document.querySelectorAll('.env-block').forEach(function (block) {
+    var tabs = block.querySelectorAll('.sim-tab');
+    var panels = block.querySelectorAll('.sim-panel');
+    function show(key) {
+      tabs.forEach(function (t) { var on = t.dataset.key === key; t.classList.toggle('is-active', on); t.setAttribute('aria-selected', on ? 'true' : 'false'); });
+      panels.forEach(function (p) {
+        var on = p.id === 'sim-' + key; p.classList.toggle('is-active', on);
+        p.querySelectorAll('video').forEach(function (v) {
+          if (on) { if (v.preload === 'none') { v.preload = 'metadata'; v.load(); } v.play().catch(function () {}); } else { v.pause(); }
+        });
+      });
+    }
+    tabs.forEach(function (t) { t.addEventListener('click', function () { show(t.dataset.key); }); });
+  });
+})();
+</script>
 
 <section id="overview">
   <figure>
