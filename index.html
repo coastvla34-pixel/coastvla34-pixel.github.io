@@ -1007,9 +1007,8 @@
     </div>
   </details>
   <details class="appendix">
-    <summary>Why does a closed-form gate work, and why does steering transfer across tasks? <span class="tag">Mechanism and transfer</span></summary>
+    <summary>Why does a closed-form gate work? <span class="tag">Mechanism</span></summary>
     <div class="inner">
-      <h3 style="margin-top:14px;">Why Does a Closed-Form Gate Work?</h3>
   <p>We identify three geometric facts about the action expert&rsquo;s hidden states that explain the double-digit gains.</p>
 
   <div class="two">
@@ -1033,8 +1032,11 @@
     <figcaption><b>Conceptor steering pulls activations toward the success region.</b> <b>(A)</b> Per-step activations projected onto the top two eigenvectors of \(C_{\text{steer}}\), the subspace maximally separating baseline success from failure. Solid ellipses: baseline \(2\sigma\) regions; dashed: steered; large markers: centroids. <b>(B)</b> Projection onto \(v_1(C_{\text{steer}})\) over normalized trajectory time (means \(\pm 1\sigma\)).</figcaption>
   </figure>
   <p>The key observation is that steered centroids shift toward the baseline-success centroid and away from the baseline-failure centroid. Over trajectory time, steered successes consistently track the baseline-success mean, while steered failures either sustain a partial shift or revert to the baseline-failure trajectory. The physical outcome closely tracks which distribution the activations align with, confirming that these regions are linked to task execution rather than merely descriptive.</p>
-
-      <h3 style="margin-top:22px;">Tasks Share Failure Geometry, Enabling Cross-Task Steering</h3>
+    </div>
+  </details>
+  <details class="appendix">
+    <summary>Tasks share failure geometry, enabling cross-task steering <span class="tag">Cross-task transfer</span></summary>
+    <div class="inner">
   <p>Success activations cluster tightly and uniformly across tasks, while failure activations spread into distinct, task-specific regions. Because the contrastive conceptor acts subtractively along failure directions, a conceptor fitted on one <i>source</i> task should also help a different <i>target</i> task whenever their failure subspaces overlap.</p>
   <figure>
     <img src="figures/sim_vs_sr_gain.png" alt="Left: joint PCA of LIBERO activations showing task-specific failure regions and uniform success clusters. Right: transfer gain against failure-subspace containment shows a positive correlation, while success containment shows none.">
